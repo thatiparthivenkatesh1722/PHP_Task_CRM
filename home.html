@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+
+    <style>
+      body {
+        background: #f4f8fb;
+      }
+
+      .navbar {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+      }
+      .navbar-title {
+        color: white;
+        font-size: 24px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        letter-spacing: 0.5px;
+      }
+
+      .navbar-title i {
+        font-size: 26px;
+      }
+      .page-subtitle {
+        color: #64748b;
+        font-size: 16px;
+        margin-top: -10px;
+        margin-bottom: 35px;
+      }
+      .user-dropdown {
+        width: 240px;
+        border: none;
+      }
+
+      .user-drop-header {
+        background: linear-gradient(135deg, #11998e, #38ef7d);
+        padding: 18px 12px;
+      }
+
+      .avatar-circle {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: #0d6efd;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      .avatar-large {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: white;
+        color: #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: bold;
+        margin: auto;
+      }
+
+      .dashboard-card {
+        border: none;
+        border-radius: 18px;
+        transition: 0.3s;
+      }
+
+      .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-icon {
+        font-size: 45px;
+        color: #11998e;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark px-4">
+      <div class="navbar-title">
+        <i class="bi bi-buildings-fill me-2"></i>
+        WorkSphere CRM
+      </div>
+
+      <div class="ms-auto dropdown">
+        <button
+          class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 shadow-sm"
+          type="button"
+          data-bs-toggle="dropdown"
+        >
+          <div id="userAvatar" class="avatar-circle">U</div>
+
+          <div class="text-start d-none d-md-block">
+            <div id="navUserName" class="fw-bold small">User Name</div>
+            <div class="text-muted small">Admin</div>
+          </div>
+        </button>
+
+        <ul
+          class="dropdown-menu dropdown-menu-end shadow rounded-4 p-0 overflow-hidden user-dropdown"
+        >
+          <li class="user-drop-header text-white text-center">
+            <div id="dropdownAvatar" class="avatar-large">U</div>
+            <h6 id="dropdownUserName" class="mb-1 mt-2">User Name</h6>
+            <p id="dropdownUserEmail" class="mb-0 small">user@gmail.com</p>
+          </li>
+
+          <li><hr class="dropdown-divider m-0" /></li>
+
+          <li>
+            <a href="dashboard.html" class="dropdown-item py-2 px-3">
+              <i class="bi bi-speedometer2 me-2"></i> Dashboard
+            </a>
+          </li>
+
+          <li>
+            <button
+              class="dropdown-item py-2 px-3 text-danger fw-bold"
+              id="logoutBtn"
+            >
+              <i class="bi bi-box-arrow-right me-2"></i> Logout
+            </button>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container py-5">
+      <h2 class="fw-bold mb-4">Admin Operations</h2>
+      <p class="page-subtitle">
+        Manage companies, departments, employees, and salary operations from one
+        centralized dashboard.
+      </p>
+
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="card dashboard-card shadow-sm p-3 text-center">
+            <i class="bi bi-building card-icon"></i>
+            <h5 class="fw-bold mt-3">Company</h5>
+            <p class="text-muted">Create company details</p>
+            <button
+              class="btn btn-success"
+              data-bs-toggle="modal"
+              data-bs-target="#companyModal"
+            >
+              Create Company
+            </button>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="card dashboard-card shadow-sm p-3 text-center">
+            <i class="bi bi-diagram-3 card-icon"></i>
+            <h5 class="fw-bold mt-3">Department</h5>
+            <p class="text-muted">Create department details</p>
+            <button
+              class="btn btn-success"
+              data-bs-toggle="modal"
+              data-bs-target="#departmentModal"
+            >
+              Create Department
+            </button>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="card dashboard-card shadow-sm p-3 text-center">
+            <i class="bi bi-people card-icon"></i>
+            <h5 class="fw-bold mt-3">Employee</h5>
+            <p class="text-muted">Create employee details</p>
+            <button
+              class="btn btn-success"
+              data-bs-toggle="modal"
+              data-bs-target="#employeeModal"
+            >
+              Create Employee
+            </button>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="card dashboard-card shadow-sm p-3 text-center">
+            <i class="bi bi-cash-stack card-icon"></i>
+            <h5 class="fw-bold mt-3">Salary</h5>
+            <p class="text-muted">Create salary details</p>
+            <button
+              class="btn btn-success"
+              data-bs-toggle="modal"
+              data-bs-target="#salaryModal"
+            >
+              Create Salary
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="companyModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content rounded-4">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Create Company</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+
+          <form id="companyForm">
+            <div class="modal-body">
+              <div class="mb-3">
+                <label>Company Name</label>
+                <input type="text" id="companyName" class="form-control" />
+                <small class="error text-danger"></small>
+              </div>
+
+              <div class="mb-3">
+                <label>Industry</label>
+                <input type="text" id="industry" class="form-control" />
+                <small class="error text-danger"></small>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="submit" class="btn btn-success">
+                Save Company
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="departmentModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content rounded-4">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Create Department</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+
+          <form id="departmentForm">
+            <div class="modal-body">
+              <div class="mb-3">
+                <label>Department Name</label>
+                <input type="text" id="departmentName" class="form-control" />
+                <small class="error text-danger"></small>
+              </div>
+
+              <div class="mb-3">
+                <label>Company</label>
+                <select id="departmentCompany" class="form-select">
+                  <option value="">Select Company</option>
+                </select>
+                <small class="error text-danger"></small>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="submit" class="btn btn-success">
+                Save Department
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="employeeModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content rounded-4">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Create Employee</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+
+          <form id="employeeForm">
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label>First Name</label>
+                  <input type="text" id="empFirstName" class="form-control" />
+                  <small class="error text-danger"></small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label>Last Name</label>
+                  <input type="text" id="empLastName" class="form-control" />
+                  <small class="error text-danger"></small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label>Email</label>
+                  <input type="email" id="empEmail" class="form-control" />
+                  <small class="error text-danger"></small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label>Phone</label>
+                  <input type="text" id="empPhone" class="form-control" />
+                  <small class="error text-danger"></small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label>Company</label>
+                  <select id="empCompany" class="form-select">
+                    <option value="">Select Company</option>
+                  </select>
+                  <small class="error text-danger"></small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label>Department</label>
+                  <select id="empDepartment" class="form-select">
+                    <option value="">Select Department</option>
+                  </select>
+                  <small class="error text-danger"></small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label>Role</label>
+                  <input type="text" id="empRole" class="form-control" />
+                  <small class="error text-danger"></small>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label>Join Date</label>
+                  <input type="date" id="empJoinDate" class="form-control" />
+                  <small class="error text-danger"></small>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button type="submit" class="btn btn-success">
+                Save Employee
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="salaryModal" tabindex="-1" aria-hidden="true">
+      <div
+        class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"
+      >
+        <div class="modal-content border-0 shadow rounded-4">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold">Create Monthly Salary</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+
+          <div class="modal-body pt-2">
+            <form id="salaryForm">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-secondary"
+                    >Company</label
+                  >
+                  <select class="form-select" id="salaryCompany">
+                    <option value="">Select Company</option>
+                  </select>
+                  <small class="error text-danger"></small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-secondary"
+                    >Employee</label
+                  >
+                  <select class="form-select" id="salaryEmployee">
+                    <option value="">Select Employee</option>
+                  </select>
+                  <small class="error text-danger"></small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-secondary"
+                    >Salary Month</label
+                  >
+                  <input type="month" class="form-control" id="salaryMonth" />
+                  <small class="error text-danger"></small>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold text-secondary"
+                    >Payment Date</label
+                  >
+                  <input type="date" class="form-control" id="paymentDate" />
+                  <small class="error text-danger"></small>
+                </div>
+              </div>
+
+              <hr class="my-4" />
+
+              <div
+                class="d-flex justify-content-between align-items-center mb-2"
+              >
+                <span class="small fw-semibold text-secondary"
+                  >Salary Components</span
+                >
+                <button
+                  type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  id="addSalaryLine"
+                >
+                  Add line
+                </button>
+              </div>
+
+              <div id="salaryLines"></div>
+
+              <div class="modal-footer border-0 px-0 pb-0 mt-3">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+
+                <button type="submit" class="btn btn-success">
+                  Save Salary
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="./JS/home.js"></script>
+  </body>
+</html>
