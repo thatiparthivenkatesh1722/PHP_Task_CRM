@@ -3,106 +3,198 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
+  <title>Login | WorkSphere CRM</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --g1: #11998e; --g2: #38ef7d;
+      --bg: #0d0f18; --card: #161923;
+      --bdr: rgba(255,255,255,0.07); --tx: #e2e8f0; --mu: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #eef7ff, #e9fff4);
-  
-}
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--tx);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-.auth-card {
-  background: #ffffff;
-  border: none;
-  border-radius: 24px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-}
+    .auth-card {
+      background: var(--card);
+      border: 1px solid var(--bdr);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      padding: 40px;
+      width: 100%;
+      max-width: 440px;
+    }
 
-.auth-icon {
-  font-size: 4rem;
-  color: #11998e;
-}
-.auth-subtitle {
-  font-size: 14px;
-  color: #64748b;
-  margin-bottom: 20px;
-}
+    .auth-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--g1), var(--g2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 28px;
+      margin: 0 auto 20px;
+    }
 
+    .auth-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .auth-subtitle {
+      font-size: 14px;
+      color: var(--mu);
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
-.auth-title {
-  color: #11998e;
-  font-weight: 800;
-}
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--mu);
+      margin-bottom: 6px;
+      display: block;
+    }
 
-.btn-auth {
-  background: linear-gradient(135deg, #11998e, #38ef7d);
-  color: #fff;
-  border: none;
-  padding: 12px;
-  font-weight: 700;
-  border-radius: 12px;
-}
+    .form-control {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--bdr);
+      color: var(--tx);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 14px;
+    }
+    .form-control:focus {
+      background: rgba(255,255,255,0.06);
+      border-color: var(--g1);
+      box-shadow: 0 0 0 3px rgba(17,153,142,.15);
+      color: var(--tx);
+    }
+    .form-control::placeholder { color: var(--mu); }
 
-.btn-auth:hover {
-  opacity: 0.9;
-  color: #fff;
-}
+    .btn-auth {
+      background: linear-gradient(135deg, var(--g1), var(--g2));
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-weight: 700;
+      border-radius: 12px;
+      width: 100%;
+      transition: 0.2s;
+    }
+    .btn-auth:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
 
-.form-control {
-  border-radius: 12px;
-  padding: 11px;
-}
+    .forgot-link {
+      font-size: 12px;
+      color: var(--g2);
+      text-decoration: none;
+      font-weight: 600;
+      float: right;
+    }
+    .forgot-link:hover { text-decoration: underline; }
 
-.error {
-  font-size: 13px;
-}
+    .error { font-size: 11px; margin-top: 4px; display: block; }
+    
+    .modal-content {
+      background: var(--card);
+      border: 1px solid var(--bdr);
+      color: var(--tx);
+    }
+    .modal-header { border-bottom: 1px solid var(--bdr); }
   </style>
 </head>
 
 <body>
 
-<div class="container d-flex justify-content-center align-items-center min-vh-100">
-  <div class="card auth-card col-11 col-sm-10 col-md-8 col-lg-6 col-xl-4 p-4">
+<div class="auth-card">
+  <div class="auth-icon"><i class="bi bi-person-circle"></i></div>
+  <h3 class="auth-title">Welcome Back</h3>
+  <p class="auth-subtitle">Log in to your WorkSphere account.</p>
 
-    <div class="text-center mb-4">
-      <i class="bi bi-person-circle auth-icon"></i>
-     <h3 class="auth-title mt-3">Login</h3>
-      <p class="auth-subtitle">Welcome back 👋</p>
+  <form id="loginForm">
+    <div class="mb-3">
+      <label>Email</label>
+      <input type="email" id="email" class="form-control" placeholder="Enter your email">
+      <small class="error text-danger"></small>
     </div>
 
-    <form id="loginForm">
+    <div class="mb-4">
+      <label>
+        Password
+        <a href="#" class="forgot-link" data-bs-toggle="modal" data-bs-target="#forgotModal">Forgot Password?</a>
+      </label>
+      <input type="password" id="password" class="form-control" placeholder="Enter your password">
+      <small class="error text-danger"></small>
+    </div>
 
-      <div class="mb-3">
-        <label>Email</label>
-        <input type="email" id="email" class="form-control" placeholder="Enter your Email">
-        <small class="error text-danger"></small>
+    <button type="submit" class="btn-auth">
+      Login <i class="bi bi-arrow-right ms-1"></i>
+    </button>
+
+    <p class="mt-4 text-center" style="font-size: 13px; color: var(--mu);">
+      Don't have an account?
+      <a href="register.html" style="color: var(--g2); text-decoration: none; font-weight: 600;">Register</a>
+    </p>
+  </form>
+</div>
+
+<!-- Forgot Password Modal -->
+<div class="modal fade" id="forgotModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" style="font-weight:700;"><i class="bi bi-shield-lock me-2" style="color:var(--g2);"></i>Reset Password</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-
-      <div class="mb-3">
-        <label>Password</label>
-        <input type="password" id="password" class="form-control" placeholder="Enter your Password">
-        <small class="error text-danger"></small>
+      <div class="modal-body p-4" id="forgotBody">
+        <!-- Step 1: Email -->
+        <div id="stepEmail">
+          <p style="font-size:13px;color:var(--mu);">Enter your email address and we will generate an OTP for you.</p>
+          <div class="mb-3">
+            <label>Email Address</label>
+            <input type="email" id="forgotEmail" class="form-control" placeholder="user@example.com">
+          </div>
+          <button class="btn-auth" id="btnSendOTP">Send OTP</button>
+        </div>
+        
+        <!-- Step 2: OTP and New Password -->
+        <div id="stepReset" style="display:none;">
+          <p style="font-size:13px;color:var(--g2);font-weight:600;">OTP sent! Check your console.</p>
+          <div class="mb-3">
+            <label>Enter 6-digit OTP</label>
+            <input type="text" id="resetOTP" class="form-control" placeholder="123456" maxlength="6">
+          </div>
+          <div class="mb-3">
+            <label>New Password</label>
+            <input type="password" id="newPassword" class="form-control" placeholder="Enter new password">
+          </div>
+          <button class="btn-auth" id="btnResetPassword">Reset Password</button>
+        </div>
       </div>
-
-      <button type="submit" class="btn btn-success btn-login w-100">
-        <i class="bi bi-box-arrow-in-right me-2"></i>Login
-      </button>
-
-      <p class="mt-3 text-center">
-        Don’t have an account?
-        <a href="register.html" class="text-primary fw-bold text-decoration-none">Register</a>
-      </p>
-
-    </form>
-
+    </div>
   </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="./JS/login.js"></script>
 

@@ -1,173 +1,1075 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CRM Dashboard</title>
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
-      rel="stylesheet"
-    />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WorkSphere CRM</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --g1: #11998e;
+      --g2: #38ef7d;
+      --bg: #0d0f18;
+      --card: #161923;
+      --side: #111420;
+      --bdr: rgba(255, 255, 255, 0.07);
+      --tx: #e2e8f0;
+      --mu: #64748b;
+      --nh: 62px;
+      --sw: 252px;
+    }
 
-    <style>
-      body {
-        background: #f4f8fb;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: var(--bg);
+      color: var(--tx);
+      min-height: 100vh;
+    }
+
+    .cnav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--nh);
+      background: rgba(15, 18, 28, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--bdr);
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      gap: 12px;
+      z-index: 999;
+    }
+
+    .ham {
+      background: none;
+      border: none;
+      color: var(--tx);
+      font-size: 22px;
+      cursor: pointer;
+      padding: 5px 9px;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+
+    .ham:hover {
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .brand-icon {
+      width: 33px;
+      height: 33px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--g1), var(--g2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    .brand-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .brand-name span {
+      color: var(--g2);
+    }
+
+    .nav-greet {
+      margin-left: auto;
+      font-size: 13px;
+      color: var(--mu);
+      font-weight: 500;
+    }
+
+    .nav-greet b {
+      color: var(--tx);
+    }
+
+    .nav-prof {
+      position: relative;
+      margin-left: 18px;
+    }
+
+    .prof-toggle {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--bdr);
+      border-radius: 10px;
+      padding: 6px 13px;
+      cursor: pointer;
+      color: var(--tx);
+      transition: 0.2s;
+    }
+
+    .prof-toggle:hover {
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .av-s {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--g1), var(--g2));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .pname {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .prole {
+      font-size: 11px;
+      color: var(--mu);
+    }
+
+    .chev {
+      font-size: 11px;
+      color: var(--mu);
+    }
+
+    .pdrop {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 230px;
+      background: var(--card);
+      border: 1px solid var(--bdr);
+      border-radius: 13px;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+      display: none;
+      z-index: 1001;
+      overflow: hidden;
+    }
+
+    .pdrop.open {
+      display: block;
+      animation: dslide 0.17s ease;
+    }
+
+    @keyframes dslide {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
       }
 
-      .navbar {
-        background: linear-gradient(135deg, #11998e, #38ef7d);
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
-      .navbar-title {
-        color: white;
-        font-size: 24px;
-        font-weight: 800;
-        display: flex;
-        align-items: center;
-        letter-spacing: 0.5px;
+    }
+
+    .pd-head {
+      background: linear-gradient(135deg, var(--g1), var(--g2));
+      padding: 18px;
+      text-align: center;
+    }
+
+    .av-l {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      font-weight: 800;
+      margin: 0 auto 8px;
+    }
+
+    .pd-head h6 {
+      color: #fff;
+      font-weight: 700;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .pd-head p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 11px;
+      margin: 2px 0 0;
+    }
+
+    .pd-body {
+      padding: 8px;
+    }
+
+    .pd-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 11px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--tx);
+    }
+
+    .pd-row i {
+      width: 16px;
+      text-align: center;
+      color: var(--mu);
+    }
+
+    .pd-hr {
+      border-color: var(--bdr);
+      margin: 4px 0;
+    }
+
+    .pd-btn {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: 8px;
+      background: none;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      color: #ef4444;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .pd-btn:hover {
+      background: rgba(239, 68, 68, 0.08);
+    }
+
+    .pd-btn i {
+      width: 16px;
+      text-align: center;
+    }
+
+    .cside {
+      position: fixed;
+      top: var(--nh);
+      left: 0;
+      bottom: 0;
+      width: var(--sw);
+      background: var(--side);
+      border-right: 1px solid var(--bdr);
+      padding: 14px 10px;
+      overflow-y: auto;
+      z-index: 900;
+      transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .cside.closed {
+      transform: translateX(-100%);
+    }
+
+    .sg-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+      color: var(--mu);
+      padding: 14px 10px 6px;
+    }
+
+    .si {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      width: 100%;
+      padding: 10px 13px;
+      border-radius: 10px;
+      background: none;
+      border: none;
+      color: var(--mu);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.17s;
+      margin-bottom: 2px;
+      text-align: left;
+    }
+
+    .si:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--tx);
+    }
+
+    .si.on {
+      background: linear-gradient(135deg,
+          rgba(17, 153, 142, 0.17),
+          rgba(56, 239, 125, 0.05));
+      color: var(--g2);
+      border: 1px solid rgba(17, 153, 142, 0.22);
+    }
+
+    .si i {
+      font-size: 16px;
+      width: 19px;
+      text-align: center;
+    }
+
+    .si-parent {
+      justify-content: space-between;
+    }
+
+    .si-parent .si-left {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .si-arrow {
+      font-size: 12px;
+      transition: transform 0.22s;
+    }
+
+    .si-parent.open .si-arrow {
+      transform: rotate(180deg);
+    }
+
+    .si-parent.open {
+      color: var(--tx);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .si-children {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.25s ease;
+    }
+
+    .si-children.open {
+      max-height: 200px;
+    }
+
+    .si-child {
+      padding: 8px 13px 8px 42px;
+      font-size: 12px;
+    }
+
+    .si-child i {
+      font-size: 13px;
+    }
+
+    .cmain {
+      margin-left: var(--sw);
+      margin-top: var(--nh);
+      padding: 26px;
+      transition: margin-left 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+      min-height: calc(100vh - var(--nh));
+    }
+
+    .cmain.wide {
+      margin-left: 0;
+    }
+
+    .sc {
+      background: var(--card);
+      border: 1px solid var(--bdr);
+      border-radius: 14px;
+      padding: 20px 18px;
+      transition: 0.22s;
+    }
+
+    .sc:hover {
+      transform: translateY(-3px);
+      border-color: rgba(17, 153, 142, 0.3);
+      box-shadow: 0 6px 24px rgba(17, 153, 142, 0.1);
+    }
+
+    .sc-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .sc-val {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .sc-lbl {
+      font-size: 12px;
+      color: var(--mu);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .ic1 {
+      background: rgba(99, 102, 241, 0.12);
+      color: #818cf8;
+    }
+
+    .ic2 {
+      background: rgba(34, 197, 94, 0.12);
+      color: #4ade80;
+    }
+
+    .ic3 {
+      background: rgba(14, 165, 233, 0.12);
+      color: #38bdf8;
+    }
+
+    .ic4 {
+      background: rgba(236, 72, 153, 0.12);
+      color: #f472b6;
+    }
+
+    .ic5 {
+      background: rgba(245, 158, 11, 0.12);
+      color: #fbbf24;
+    }
+
+    .ic6 {
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+    }
+
+    .ic7 {
+      background: rgba(168, 85, 247, 0.12);
+      color: #c084fc;
+    }
+
+    .ic8 {
+      background: rgba(17, 153, 142, 0.15);
+      color: #38ef7d;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--bdr);
+      border-radius: 14px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .pt {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .pt i {
+      color: var(--g2);
+    }
+
+    .ctbl {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .ctbl th {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--mu);
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--bdr);
+      text-align: left;
+    }
+
+    .ctbl td {
+      padding: 10px 10px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--bdr);
+      vertical-align: middle;
+    }
+
+    .ctbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .ctbl tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .bactive {
+      background: rgba(34, 197, 94, 0.12);
+      color: #4ade80;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .bamt {
+      color: #4ade80;
+      font-weight: 700;
+    }
+
+    .sec {
+      display: none;
+    }
+
+    .sec.on {
+      display: block;
+    }
+
+    .stitle {
+      font-size: 21px;
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+
+    .ssub {
+      font-size: 13px;
+      color: var(--mu);
+      margin-bottom: 20px;
+    }
+
+    .fbox {
+      background: var(--card);
+      border: 1px solid var(--bdr);
+      border-radius: 14px;
+      padding: 26px;
+      max-width: 680px;
+    }
+
+    .fbox label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--mu);
+      margin-bottom: 5px;
+    }
+
+    .fbox .form-control,
+    .fbox .form-select {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--bdr);
+      color: var(--tx);
+      border-radius: 9px;
+      padding: 9px 13px;
+      font-size: 13px;
+    }
+
+    .fbox .form-control:focus,
+    .fbox .form-select:focus {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--g1);
+      box-shadow: 0 0 0 3px rgba(17, 153, 142, 0.15);
+      color: var(--tx);
+    }
+
+    .fbox .form-select option {
+      background: var(--card);
+    }
+
+    .btn-sv {
+      background: linear-gradient(135deg, var(--g1), var(--g2));
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      padding: 9px 24px;
+      border-radius: 9px;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+
+    .btn-sv:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+      color: #fff;
+    }
+
+    .btn-al {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--bdr);
+      color: var(--mu);
+      border-radius: 8px;
+      padding: 6px 13px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.18s;
+    }
+
+    .btn-al:hover {
+      background: rgba(255, 255, 255, 0.09);
+      color: var(--tx);
+    }
+
+    .slr {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 9px;
+      padding: 9px;
+      margin-bottom: 7px;
+    }
+
+    .btn-rm {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border-radius: 8px;
+      width: 100%;
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    .error {
+      font-size: 11px;
+    }
+
+    @media (max-width: 768px) {
+      .cside {
+        transform: translateX(-100%);
       }
 
-      .navbar-title i {
-        font-size: 26px;
-      }
-      .user-dropdown {
-        width: 240px;
-        border: none;
+      .cside.mob {
+        transform: translateX(0);
       }
 
-      .user-drop-header {
-        background: linear-gradient(135deg, #11998e, #38ef7d);
-        padding: 18px 12px;
+      .cmain {
+        margin-left: 0 !important;
       }
 
-      .avatar-circle {
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        background: #0d6efd;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
+      .pname,
+      .prole,
+      .nav-greet {
+        display: none;
       }
+    }
 
-      .avatar-large {
-        width: 52px;
-        height: 52px;
-        border-radius: 50%;
-        background: white;
-        color: #0d6efd;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        font-weight: bold;
-        margin: auto;
-      }
-      .company-panel {
-        background: #fff;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-      }
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
 
-      .table th {
-        font-size: 13px;
-        text-transform: uppercase;
-        color: #6c757d;
-      }
-    </style>
-  </head>
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.09);
+      border-radius: 3px;
+    }
+  </style>
+</head>
 
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark px-4">
-      <div class="navbar-title">
-        <i class="bi bi-buildings-fill me-2"></i>
-        WorkSphere CRM
-      </div>
-
-      <div class="ms-auto dropdown">
-        <button
-          class="btn btn-light dropdown-toggle d-flex align-items-center gap-2 shadow-sm"
-          type="button"
-          data-bs-toggle="dropdown"
-        >
-          <div id="userAvatar" class="avatar-circle">U</div>
-
-          <div class="text-start d-none d-md-block">
-            <div id="navUserName" class="fw-bold small">User Name</div>
-            <div class="text-muted small">Admin</div>
-          </div>
-        </button>
-
-        <ul
-          class="dropdown-menu dropdown-menu-end shadow rounded-4 p-0 overflow-hidden user-dropdown"
-        >
-          <li class="user-drop-header text-white text-center">
-            <div id="dropdownAvatar" class="avatar-large">U</div>
-            <h6 id="dropdownUserName" class="mb-1 mt-2">User Name</h6>
-            <p id="dropdownUserEmail" class="mb-0 small">user@gmail.com</p>
-          </li>
-
-          <li><hr class="dropdown-divider m-0" /></li>
-
-          <li>
-            <a href="home.html" class="dropdown-item py-2 px-3">
-              <i class="bi bi-house me-2"></i> Home
-            </a>
-          </li>
-
-          <li>
-            <button
-              class="dropdown-item py-2 px-3 text-danger fw-bold"
-              id="logoutBtn"
-            >
-              <i class="bi bi-box-arrow-right me-2"></i> Logout
-            </button>
-          </li>
-        </ul>
-      </div>
-    </nav>
-
-    <div class="container mt-4">
-      <div class="d-flex justify-content-between align-items-center mb-3">
+<body>
+  <nav class="cnav">
+    <button class="ham" id="hamBtn"><i class="bi bi-list"></i></button>
+    <div class="brand">
+      <div class="brand-icon"><i class="bi bi-buildings-fill"></i></div>
+      <div class="brand-name">Work<span>Sphere</span> CRM</div>
+    </div>
+    <div class="nav-greet" id="navGreet">
+      Good day, <b id="navFirst">User</b> &nbsp;👋
+    </div>
+    <div class="nav-prof">
+      <button class="prof-toggle" id="profBtn">
+        <div class="av-s" id="avSm">U</div>
         <div>
-          <h1 class="hero-title h3 mb-2">Workforce Dashboard</h1>
-          <p class="muted">
-            Monitor employees, departments, and salary operations in one place.
-          </p>
+          <div class="pname" id="navName">User</div>
+          <div class="prole" id="navRole">Admin</div>
         </div>
-        <div style="width: 250px">
-          <select id="dashCompany" class="form-select">
-            <option value="">Select Company</option>
-          </select>
+        <i class="bi bi-chevron-down chev"></i>
+      </button>
+      <div class="pdrop" id="pdrop">
+        <div class="pd-head">
+          <div class="av-l" id="avLg">U</div>
+          <h6 id="dName">User Name</h6>
+          <p id="dEmail">user@email.com</p>
+        </div>
+        <div class="pd-body">
+          <div class="pd-row">
+            <i class="bi bi-person-badge"></i><span id="dRole">Role: Admin</span>
+          </div>
+          <hr class="pd-hr" />
+          <button class="pd-btn" id="logoutBtn">
+            <i class="bi bi-box-arrow-right"></i> Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <aside class="cside" id="sidebar">
+    <div class="sg-label">Navigation</div>
+    <button class="si on" data-sec="dashboard">
+      <i class="bi bi-grid-1x2-fill"></i> Home
+    </button>
+
+    <button class="si si-parent" data-group="company">
+      <span class="si-left"><i class="bi bi-building"></i> Companies</span>
+      <i class="bi bi-chevron-down si-arrow"></i>
+    </button>
+    <div class="si-children" id="grp-company">
+      <button class="si si-child" data-sec="list-company">
+        <i class="bi bi-list-ul"></i> All Companies
+      </button>
+      <button class="si si-child" data-sec="company">
+        <i class="bi bi-plus-circle"></i> Create Company
+      </button>
+    </div>
+
+    <button class="si si-parent" data-group="department">
+      <span class="si-left"><i class="bi bi-diagram-3"></i> Departments</span>
+      <i class="bi bi-chevron-down si-arrow"></i>
+    </button>
+    <div class="si-children" id="grp-department">
+      <button class="si si-child" data-sec="list-department">
+        <i class="bi bi-list-ul"></i> All Departments
+      </button>
+      <button class="si si-child" data-sec="department">
+        <i class="bi bi-plus-circle"></i> Create Department
+      </button>
+    </div>
+
+    <button class="si si-parent" data-group="employee">
+      <span class="si-left"><i class="bi bi-people"></i> Employees</span>
+      <i class="bi bi-chevron-down si-arrow"></i>
+    </button>
+    <div class="si-children" id="grp-employee">
+      <button class="si si-child" data-sec="list-employee">
+        <i class="bi bi-list-ul"></i> All Employees
+      </button>
+      <button class="si si-child" data-sec="employee">
+        <i class="bi bi-plus-circle"></i> Create Employee
+      </button>
+    </div>
+
+    <button class="si si-parent" data-group="salary">
+      <span class="si-left"><i class="bi bi-cash-stack"></i> Salary</span>
+      <i class="bi bi-chevron-down si-arrow"></i>
+    </button>
+    <div class="si-children" id="grp-salary">
+      <button class="si si-child" data-sec="list-salary">
+        <i class="bi bi-list-ul"></i> All Salaries
+      </button>
+      <button class="si si-child" data-sec="salary">
+        <i class="bi bi-plus-circle"></i> Create Salary
+      </button>
+    </div>
+  </aside>
+
+  <main class="cmain" id="main">
+    <!-- DASHBOARD -->
+    <div class="sec on" id="sec-dashboard">
+      <div class="mb-4">
+        <h2 style="font-size: 21px; font-weight: 800">Overview</h2>
+        <p style="color: var(--mu); font-size: 13px">
+          Your workspace at a glance.
+        </p>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="sc">
+            <div class="sc-icon ic1"><i class="bi bi-people-fill"></i></div>
+            <div class="sc-val" id="stEmpTotal">0</div>
+            <div class="sc-lbl">Total Employees</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="sc">
+            <div class="sc-icon ic2">
+              <i class="bi bi-person-check-fill"></i>
+            </div>
+            <div class="sc-val" id="stEmpActive">0</div>
+            <div class="sc-lbl">Active Employees</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="sc">
+            <div class="sc-icon ic3"><i class="bi bi-building-fill"></i></div>
+            <div class="sc-val" id="stComp">0</div>
+            <div class="sc-lbl">Total Companies</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="sc">
+            <div class="sc-icon ic4"><i class="bi bi-tags-fill"></i></div>
+            <div class="sc-val" id="stIndustry">0</div>
+            <div class="sc-lbl">Industries</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="sc">
+            <div class="sc-icon ic5">
+              <i class="bi bi-diagram-3-fill"></i>
+            </div>
+            <div class="sc-val" id="stDept">0</div>
+            <div class="sc-lbl">Departments</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="sc">
+            <div class="sc-icon ic6">
+              <i class="bi bi-receipt-cutoff"></i>
+            </div>
+            <div class="sc-val" id="stSalCount">0</div>
+            <div class="sc-lbl">Salaries Processed</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="sc">
+            <div class="sc-icon ic7">
+              <i class="bi bi-person-lines-fill"></i>
+            </div>
+            <div class="sc-val" id="stPaidEmp">0</div>
+            <div class="sc-lbl">Paid Employees</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="sc">
+            <div class="sc-icon ic8">
+              <i class="bi bi-currency-rupee"></i>
+            </div>
+            <div class="sc-val" id="stSalTotal" style="font-size: 20px">
+              ₹0
+            </div>
+            <div class="sc-lbl">Total Disbursed</div>
+          </div>
         </div>
       </div>
 
-      <div class="company-panel">
+      <div class="row g-3">
+        <div class="col-lg-7">
+          <div class="panel">
+            <div class="pt">
+              <i class="bi bi-people"></i> Recent Employees
+            </div>
+            <div class="table-responsive">
+              <table class="ctbl">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Company</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="tblEmp">
+                  <tr>
+                    <td colspan="4" class="text-center py-3" style="color: var(--mu)">
+                      Loading...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="panel">
+            <div class="pt">
+              <i class="bi bi-cash-stack"></i> Recent Salaries
+            </div>
+            <div class="table-responsive">
+              <table class="ctbl">
+                <thead>
+                  <tr>
+                    <th>Employee</th>
+                    <th>Month</th>
+                    <th>Net Pay</th>
+                  </tr>
+                </thead>
+                <tbody id="tblSal">
+                  <tr>
+                    <td colspan="3" class="text-center py-3" style="color: var(--mu)">
+                      Loading...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec" id="sec-company">
+      <div class="stitle">Create Company</div>
+      <div class="ssub">Add a new company to your workspace.</div>
+      <div class="fbox">
+        <form id="companyForm">
+          <div class="mb-3">
+            <label>Company Name</label>
+            <input type="text" id="companyName" class="form-control" placeholder="e.g. TechCorp Pvt Ltd" />
+            <small class="error text-danger"></small>
+          </div>
+          <div class="mb-3">
+            <label>Industry</label>
+            <input type="text" id="industry" class="form-control" placeholder="e.g. IT Services, Finance" />
+            <small class="error text-danger"></small>
+          </div>
+          <button type="submit" class="btn btn-sv">Save Company</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="sec" id="sec-department">
+      <div class="stitle">Create Department</div>
+      <div class="ssub">Assign a department under a company.</div>
+      <div class="fbox">
+        <form id="departmentForm">
+          <div class="mb-3">
+            <label>Department Name</label>
+            <input type="text" id="departmentName" class="form-control" placeholder="e.g. Engineering, HR" />
+            <small class="error text-danger"></small>
+          </div>
+          <div class="mb-3">
+            <label>Company</label>
+            <select id="departmentCompany" class="form-select">
+              <option value="">Select Company</option>
+            </select>
+            <small class="error text-danger"></small>
+          </div>
+          <button type="submit" class="btn btn-sv">Save Department</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="sec" id="sec-employee">
+      <div class="stitle">Create Employee</div>
+      <div class="ssub">Register a new employee profile.</div>
+      <div class="fbox" style="max-width: 860px">
+        <form id="employeeForm">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label>First Name</label>
+              <input type="text" id="empFirstName" class="form-control" />
+              <small class="error text-danger"></small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label>Last Name</label>
+              <input type="text" id="empLastName" class="form-control" />
+              <small class="error text-danger"></small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label>Email</label>
+              <input type="email" id="empEmail" class="form-control" />
+              <small class="error text-danger"></small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label>Phone</label>
+              <input type="text" id="empPhone" class="form-control" />
+              <small class="error text-danger"></small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label>Company</label>
+              <select id="empCompany" class="form-select">
+                <option value="">Select Company</option>
+              </select>
+              <small class="error text-danger"></small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label>Department</label>
+              <select id="empDepartment" class="form-select">
+                <option value="">Select Department</option>
+              </select>
+              <small class="error text-danger"></small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label>Role</label>
+              <input type="text" id="empRole" class="form-control" />
+              <small class="error text-danger"></small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label>Join Date</label>
+              <input type="date" id="empJoinDate" class="form-control" />
+              <small class="error text-danger"></small>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-sv">Save Employee</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="sec" id="sec-salary">
+      <div class="stitle">Create Salary</div>
+      <div class="ssub">Configure monthly salary for an employee.</div>
+      <div class="fbox" style="max-width: 860px">
+        <form id="salaryForm">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label>Company</label>
+              <select id="salaryCompany" class="form-select">
+                <option value="">Select Company</option>
+              </select>
+              <small class="error text-danger"></small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label>Employee</label>
+              <select id="salaryEmployee" class="form-select">
+                <option value="">Select Employee</option>
+              </select>
+              <small class="error text-danger"></small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label>Salary Month</label>
+              <input type="month" id="salaryMonth" class="form-control" />
+              <small class="error text-danger"></small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label>Payment Date</label>
+              <input type="date" id="paymentDate" class="form-control" />
+              <small class="error text-danger"></small>
+            </div>
+          </div>
+          <hr style="border-color: var(--bdr); margin: 4px 0 16px" />
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span style="font-size: 12px; font-weight: 600; color: var(--mu)">Salary Components</span>
+            <button type="button" class="btn-al" id="addLine">
+              <i class="bi bi-plus-lg me-1"></i>Add Line
+            </button>
+          </div>
+          <div id="salaryLines"></div>
+          <button type="submit" class="btn btn-sv mt-3">Save Salary</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ALL COMPANIES LIST -->
+    <div class="sec" id="sec-list-company">
+      <div class="stitle">All Companies</div>
+      <div class="ssub">All companies in your workspace.</div>
+      <div class="panel" style="max-width: 860px">
         <div class="table-responsive">
-          <table class="table table-hover align-middle">
-            <thead class="table-light">
+          <table class="ctbl">
+            <thead>
               <tr>
-                <th>Employee</th>
-                <th>Email</th>
-                <th>Department</th>
-                <th>Join Date</th>
-                <th>Status</th>
-                <th class="text-end">Salary</th>
-                <th class="text-end">Action</th>
+                <th>#</th>
+                <th>Company Name</th>
+                <th>Industry</th>
+                <th>Created</th>
+                <th>Action</th>
               </tr>
             </thead>
-
-            <tbody id="dashBody">
+            <tbody id="tblListCompany">
               <tr>
-                <td colspan="7" class="text-center text-muted">
-                  Select a company to load data
+                <td colspan="5" class="text-center py-3" style="color: var(--mu)">
+                  Loading...
                 </td>
               </tr>
             </tbody>
@@ -176,40 +1078,250 @@
       </div>
     </div>
 
-    <div class="modal fade" id="modalBreakdown" tabindex="-1">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Salary Breakdown</h5>
-            <button class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-
-          <div class="modal-body">
-            <div class="d-flex justify-content-between mb-3">
-              <span class="text-muted">Total Net Salary</span>
-              <span class="fw-bold text-success" id="bdTotal">0</span>
-            </div>
-
-            <table class="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Component</th>
-                  <th>Type</th>
-                  <th class="text-end">Amount</th>
-                </tr>
-              </thead>
-
-              <tbody id="bdLines"></tbody>
-            </table>
-          </div>
+    <div class="sec" id="sec-list-department">
+      <div class="stitle">All Departments</div>
+      <div class="ssub">All departments across your companies.</div>
+      <div class="panel" style="max-width: 860px">
+        <div class="table-responsive">
+          <table class="ctbl">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Department</th>
+                <th>Company</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="tblListDept">
+              <tr>
+                <td colspan="4" class="text-center py-3" style="color: var(--mu)">
+                  Loading...
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <div class="sec" id="sec-list-employee">
+      <div class="stitle">All Employees</div>
+      <div class="ssub">All registered employees.</div>
+      <div class="panel" style="max-width: 1000px">
+        <div class="table-responsive">
+          <table class="ctbl">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Company</th>
+                <th>Department</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="tblListEmp">
+              <tr>
+                <td colspan="8" class="text-center py-3" style="color: var(--mu)">
+                  Loading...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
-    <script src="./JS/dashboard.js"></script>
-  </body>
+    <div class="sec" id="sec-list-salary">
+      <div class="stitle">All Salaries</div>
+      <div class="ssub">All salary records processed.</div>
+      <div class="panel" style="max-width: 1000px">
+        <div class="table-responsive">
+          <table class="ctbl">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Employee</th>
+                <th>Company</th>
+                <th>Month</th>
+                <th>Gross</th>
+                <th>Deduction</th>
+                <th>Net Pay</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="tblListSal">
+              <tr>
+                <td colspan="8" class="text-center py-3" style="color: var(--mu)">
+                  Loading...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SALARY DETAILS MODAL -->
+    <div class="modal fade" id="salaryModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: var(--card); border: 1px solid var(--bdr); color: var(--tx);">
+          <div class="modal-header" style="border-bottom: 1px solid var(--bdr)">
+            <h5 class="modal-title" style="font-weight: 700">
+              <i class="bi bi-cash-stack me-2" style="color: var(--g2)"></i>Salary Details
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="salaryModalBody"></div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- EDIT COMPANY MODAL -->
+  <div class="modal fade" id="editCompModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background: var(--card); border: 1px solid var(--bdr); color: var(--tx);">
+        <div class="modal-header" style="border-bottom: 1px solid var(--bdr)">
+          <h5 class="modal-title" style="font-weight: 700"><i class="bi bi-pencil-square me-2" style="color: var(--g2)"></i>Edit Company</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body fbox">
+          <input type="hidden" id="edit_company_id">
+          <label>Company Name</label>
+          <input type="text" id="edit_company_name" class="form-control mb-3">
+          <label>Industry</label>
+          <input type="text" id="edit_industry" class="form-control mb-3">
+          <button type="button" id="btnUpdateComp" class="btn-sv w-100">Update Company</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT DEPARTMENT MODAL -->
+  <div class="modal fade" id="editDeptModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background: var(--card); border: 1px solid var(--bdr); color: var(--tx);">
+        <div class="modal-header" style="border-bottom: 1px solid var(--bdr)">
+          <h5 class="modal-title" style="font-weight: 700"><i class="bi bi-pencil-square me-2" style="color: var(--g2)"></i>Edit Department</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body fbox">
+          <input type="hidden" id="edit_department_id">
+          <label>Department Name</label>
+          <input type="text" id="edit_department_name" class="form-control mb-3">
+          <button type="button" id="btnUpdateDept" class="btn-sv w-100">Update Department</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT EMPLOYEE MODAL -->
+  <div class="modal fade" id="editEmpModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background: var(--card); border: 1px solid var(--bdr); color: var(--tx);">
+        <div class="modal-header" style="border-bottom: 1px solid var(--bdr)">
+          <h5 class="modal-title" style="font-weight: 700"><i class="bi bi-pencil-square me-2" style="color: var(--g2)"></i>Edit Employee</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body fbox">
+          <input type="hidden" id="edit_emp_id">
+          <div class="row">
+            <div class="col-6 mb-2"><label>First Name</label><input type="text" id="edit_emp_fname" class="form-control"></div>
+            <div class="col-6 mb-2"><label>Last Name</label><input type="text" id="edit_emp_lname" class="form-control"></div>
+          </div>
+          <div class="mb-2"><label>Email</label><input type="email" id="edit_emp_email" class="form-control"></div>
+          <div class="mb-2"><label>Phone</label><input type="text" id="edit_emp_phone" class="form-control"></div>
+          <div class="row">
+            <div class="col-6 mb-2">
+              <label>Company</label>
+              <select id="edit_emp_company" class="form-select"></select>
+            </div>
+            <div class="col-6 mb-2">
+              <label>Department</label>
+              <select id="edit_emp_department" class="form-select"></select>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-6">
+              <label>Role</label>
+              <input type="text" id="edit_emp_role" class="form-control">
+            </div>
+            <div class="col-6">
+              <label>Status</label>
+              <select id="edit_emp_status" class="form-select">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+          <button type="button" id="btnUpdateEmp" class="btn-sv w-100">Update Employee</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT SALARY MODAL -->
+  <div class="modal fade" id="editSalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" style="background: var(--card); border: 1px solid var(--bdr); color: var(--tx);">
+        <div class="modal-header" style="border-bottom: 1px solid var(--bdr);">
+          <h5 class="modal-title" style="font-weight: 700;">
+            <i class="bi bi-pencil-square me-2" style="color: var(--g2);"></i>Edit Salary
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="padding: 24px;">
+          <input type="hidden" id="edit_sal_id">
+
+          <!-- Summary bar -->
+          <div class="d-flex gap-3 mb-4 p-3 rounded" style="background:rgba(255,255,255,0.03); border:1px solid var(--bdr);">
+            <div>
+              <div style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;">Employee</div>
+              <div id="edit_sal_emp_name" style="font-weight:700;font-size:14px;"></div>
+            </div>
+            <div style="margin-left:auto; text-align:right;">
+              <div style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;">Month</div>
+              <div id="edit_sal_month" style="font-weight:700;font-size:14px;"></div>
+            </div>
+          </div>
+
+          <!-- Payment date -->
+          <div class="mb-3">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--mu);margin-bottom:5px;">Payment Date</label>
+            <input type="date" id="edit_sal_payment_date" class="form-control"
+              style="background:rgba(255,255,255,0.04);border:1px solid var(--bdr);color:var(--tx);border-radius:9px;padding:9px 13px;font-size:13px;">
+          </div>
+
+          <!-- Component lines -->
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span style="font-size:12px;font-weight:600;color:var(--mu);">Salary Components</span>
+            <button type="button" class="btn-al" id="editSalAddLine">
+              <i class="bi bi-plus-lg me-1"></i>Add Line
+            </button>
+          </div>
+          <div id="editSalLines"></div>
+
+          <!-- Live totals -->
+          <div class="d-flex gap-3 mt-3 p-3 rounded" style="background:rgba(255,255,255,0.03); border:1px solid var(--bdr); font-size:13px;">
+            <div>Gross: <span id="edit_sal_gross" style="color:var(--g2);font-weight:700;">₹0</span></div>
+            <div>Deductions: <span id="edit_sal_ded" style="color:#f87171;font-weight:700;">₹0</span></div>
+            <div style="margin-left:auto;">Net Pay: <span id="edit_sal_net" style="color:var(--g2);font-weight:800;font-size:15px;">₹0</span></div>
+          </div>
+
+          <button type="button" id="btnUpdateSal" class="btn-sv w-100 mt-4">Update Salary</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="./JS/dashboard.js"></script>
+</body>
+
 </html>

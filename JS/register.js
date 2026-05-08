@@ -64,7 +64,6 @@ $(document).ready(function () {
 
     if (!isValid) return;
 
-    // AJAX call
     $.ajax({
      url: "api/register.php",
       type: "POST",

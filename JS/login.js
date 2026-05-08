@@ -42,7 +42,7 @@ $(document).ready(function () {
           Swal.fire("Success", res.message, "success");
 
           setTimeout(function () {
-            window.location.href = "home.html";
+            window.location.href = "dashboard.html";
           }, 1500);
         } else {
           Swal.fire("Error", res.message, "error");
@@ -52,5 +52,86 @@ $(document).ready(function () {
         Swal.fire("Error", "Server error", "error");
       },
     });
+  });
+
+  $("#btnSendOTP").click(function(e) {
+    e.preventDefault();
+    let email = $("#forgotEmail").val().trim();
+    if (!email) {
+      Swal.fire("Error", "Please enter your email", "error");
+      return;
+    }
+    
+    let btn = $(this);
+    btn.text("Sending...").prop("disabled", true);
+
+    $.ajax({
+      url: "api/auth/forgot_password.php",
+      method: "POST",
+      data: { email: email },
+      success: function(res) {
+        if (res.status) {
+          Swal.fire("Sent!", res.message, "success");
+          if (res.data && res.data.otp) {
+            console.log("===============================");
+            console.log("OTP IS: " + res.data.otp);
+            console.log("===============================");
+          }
+          
+          $("#stepEmail").hide();
+          $("#stepReset").fadeIn();
+        } else {
+          Swal.fire("Error", res.message, "error");
+          btn.text("Send OTP").prop("disabled", false);
+        }
+      },
+      error: function() {
+        Swal.fire("Error", "Failed to send OTP", "error");
+        btn.text("Send OTP").prop("disabled", false);
+      }
+    });
+  });
+
+  $("#btnResetPassword").click(function(e) {
+    e.preventDefault();
+    let email = $("#forgotEmail").val().trim();
+    let otp = $("#resetOTP").val().trim();
+    let newPassword = $("#newPassword").val().trim();
+
+    if (!otp || !newPassword) {
+      Swal.fire("Error", "Please fill all fields", "error");
+      return;
+    }
+
+    let btn = $(this);
+    btn.text("Resetting...").prop("disabled", true);
+
+    $.ajax({
+      url: "api/auth/reset_password.php",
+      method: "POST",
+      data: { email: email, otp: otp, new_password: newPassword },
+      success: function(res) {
+        if (res.status) {
+          Swal.fire("Success!", res.message, "success").then(() => {
+            window.location.reload();
+          });
+        } else {
+          Swal.fire("Error", res.message, "error");
+          btn.text("Reset Password").prop("disabled", false);
+        }
+      },
+      error: function() {
+        Swal.fire("Error", "Failed to reset password", "error");
+        btn.text("Reset Password").prop("disabled", false);
+      }
+    });
+  });
+
+  $("#forgotModal").on('hidden.bs.modal', function () {
+    $("#stepEmail").show();
+    $("#stepReset").hide();
+    $("#forgotEmail, #resetOTP, #newPassword").val("");
+    $("#btnSendOTP").text("Send OTP").prop("disabled", false);
+    $("#btnResetPassword").text("Reset Password").prop("disabled", false);
   });
 });

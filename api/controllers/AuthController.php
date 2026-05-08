@@ -19,50 +19,6 @@ class AuthController
 
     public function register($first_name, $last_name, $email, $phone, $dob, $pan, $password)
 {
-    $first_name = trim($first_name);
-    $last_name = trim($last_name);
-    $email = strtolower(trim($email));
-    $phone = trim($phone);
-    $dob = trim($dob);
-    $pan = strtoupper(trim($pan));
-    $password = trim($password);
-
-    if ($first_name == "" || $last_name == "" || $email == "" || $phone == "" || $dob == "" || $pan == "" || $password == "") {
-        sendResponse(false, "All fields are required");
-    }
-
-    if (strlen($first_name) < 2 || strlen($last_name) < 2) {
-        sendResponse(false, "First and Last name must be at least 2 characters");
-    }
-
-    if (!preg_match("/^[a-zA-Z]+$/", $first_name) || !preg_match("/^[a-zA-Z]+$/", $last_name)) {
-        sendResponse(false, "Name should contain only letters");
-    }
-
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        sendResponse(false, "Invalid email format");
-    }
-
-    if (!preg_match("/^[6-9][0-9]{9}$/", $phone)) {
-        sendResponse(false, "Invalid phone number");
-    }
-
-    if (!strtotime($dob)) {
-        sendResponse(false, "Invalid date of birth");
-    }
-
-    $age = date_diff(date_create($dob), date_create("today"))->y;
-    if ($age < 18) {
-        sendResponse(false, "User must be at least 18 years old");
-    }
-
-    if (!preg_match("/^[A-Z]{5}[0-9]{4}[A-Z]$/", $pan)) {
-        sendResponse(false, "Invalid PAN format");
-    }
-
-    if (strlen($password) < 6) {
-        sendResponse(false, "Password must be at least 6 characters");
-    }
 
     $this->db->query("SELECT id FROM users WHERE email = :email OR phone = :phone OR pan = :pan");
 
@@ -147,5 +103,69 @@ class AuthController
         $user["token_expiry"] = $expiry_at;
 
         sendResponse(true, "Login successful", $user);
+    }
+
+    public function forgotPassword($email)
+    {
+        if (empty($email)) {
+            sendResponse(false, "Email is required");
+        }
+
+        $this->db->query("SELECT id FROM users WHERE email = :email");
+        $user = $this->db->first(["email" => $email]);
+
+        if (!$user) {
+            sendResponse(false, "No account found with this email");
+        }
+
+        $otp = sprintf("%06d", mt_rand(1, 999999));
+        $expiry = date("Y-m-d H:i:s", strtotime("+15 minutes"));
+
+        $this->db->query("UPDATE users SET reset_otp = :otp, reset_otp_expiry = :expiry WHERE email = :email");
+        $this->db->create([
+            "otp" => $otp,
+            "expiry" => $expiry,
+            "email" => $email
+        ]);
+
+        error_log("===== OTP FOR $email is $otp =====");
+
+        sendResponse(true, "OTP has been generated. Check the PHP console/logs.", ["otp" => $otp]);
+    }
+
+    public function resetPassword($email, $otp, $new_password)
+    {
+        if (empty($email) || empty($otp) || empty($new_password)) {
+            sendResponse(false, "All fields are required");
+        }
+
+        if (strlen($new_password) < 6) {
+            sendResponse(false, "Password must be at least 6 characters");
+        }
+
+        $this->db->query("SELECT id, reset_otp, reset_otp_expiry FROM users WHERE email = :email");
+        $user = $this->db->first(["email" => $email]);
+
+        if (!$user || $user["reset_otp"] !== $otp) {
+            sendResponse(false, "Invalid OTP");
+        }
+
+        if (strtotime($user["reset_otp_expiry"]) < time()) {
+            sendResponse(false, "OTP has expired");
+        }
+
+        $hashed = password_hash($new_password, PASSWORD_DEFAULT);
+
+        $this->db->query("UPDATE users SET password = :password, reset_otp = NULL, reset_otp_expiry = NULL WHERE email = :email");
+        $status = $this->db->create([
+            "password" => $hashed,
+            "email" => $email
+        ]);
+
+        if (!$status) {
+            sendResponse(false, "Failed to reset password");
+        }
+
+        sendResponse(true, "Password has been reset successfully. You can now log in.");
     }
 }
