@@ -1,10 +1,11 @@
 <?php
 
 require_once(__DIR__ . "/pdo.php");
+require_once(__DIR__ . "/functions.php");
 
 class DB {
     public $query = '';
-    private $pdo = null;
+    private $pdo  = null;
     private $stmt = null;
 
     function __construct()
@@ -17,11 +18,19 @@ class DB {
     }
 
     public function prepare() {
-        $this->stmt = $this->pdo->prepare($this->query);
+        try {
+            $this->stmt = $this->pdo->prepare($this->query);
+        } catch (PDOException $e) {
+            sendResponse(false, "DB prepare error: " . $e->getMessage());
+        }
     }
 
     public function execute($params) {
-        return $this->stmt->execute($params);
+        try {
+            return $this->stmt->execute($params);
+        } catch (PDOException $e) {
+            sendResponse(false, "DB execute error: " . $e->getMessage());
+        }
     }
 
     public function first($params = []) {
@@ -45,18 +54,22 @@ class DB {
         $setParts = [];
         $params   = [];
         foreach ($fields as $col => $val) {
-            $setParts[] = "`$col` = :set_$col";
+            $setParts[] = "$col = :set_$col";
             $params["set_$col"] = $val;
         }
         $whereParts = [];
         foreach ($where as $col => $val) {
-            $whereParts[] = "`$col` = :wh_$col";
+            $whereParts[] = "$col = :wh_$col";
             $params["wh_$col"] = $val;
         }
-        $sql = "UPDATE `$table` SET " . implode(', ', $setParts)
+        $sql = "UPDATE $table SET " . implode(', ', $setParts)
              . " WHERE " . implode(' AND ', $whereParts);
-        $this->stmt = $this->pdo->prepare($sql);
-        return $this->stmt->execute($params);
+        try {
+            $this->stmt = $this->pdo->prepare($sql);
+            return $this->stmt->execute($params);
+        } catch (PDOException $e) {
+            sendResponse(false, "DB update error: " . $e->getMessage());
+        }
     }
 
     public function delete($where = [], $table = '') {
@@ -64,12 +77,16 @@ class DB {
             $whereParts = [];
             $params     = [];
             foreach ($where as $col => $val) {
-                $whereParts[] = "`$col` = :$col";
+                $whereParts[] = "$col = :$col";
                 $params[$col] = $val;
             }
-            $sql = "DELETE FROM `$table` WHERE " . implode(' AND ', $whereParts);
-            $this->stmt = $this->pdo->prepare($sql);
-            return $this->stmt->execute($params);
+            $sql = "DELETE FROM $table WHERE " . implode(' AND ', $whereParts);
+            try {
+                $this->stmt = $this->pdo->prepare($sql);
+                return $this->stmt->execute($params);
+            } catch (PDOException $e) {
+                sendResponse(false, "DB delete error: " . $e->getMessage());
+            }
         }
         $this->prepare();
         return $this->execute($where);

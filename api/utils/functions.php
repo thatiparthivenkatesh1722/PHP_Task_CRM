@@ -1,11 +1,15 @@
 <?php
 
-function sendResponse($status, $message = "Success", $data = null)
+function sendResponse($status, $message = "Success", $data = null, $meta = null)
 {
-    echo json_encode([
-        "status" => $status,
+    $response = [
+        "status"  => $status,
         "message" => $message,
-        "data" => $data
-    ]);
+        "data"    => $data
+    ];
+    if ($meta !== null) {
+        $response["meta"] = $meta;
+    }
+    echo json_encode($response);
     exit();
 }

@@ -16,6 +16,8 @@ function getPDO()
         );
 
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
+        $pdo->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
         return $pdo;
 
     } catch (PDOException $e) {

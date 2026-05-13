@@ -65,7 +65,7 @@ $(document).ready(function () {
     if (!isValid) return;
 
     $.ajax({
-     url: "api/register.php",
+      url: "api/register.php",
       type: "POST",
       data: {
         first_name: first_name,

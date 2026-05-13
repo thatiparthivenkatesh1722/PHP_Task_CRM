@@ -38,12 +38,12 @@ $(document).ready(function () {
         if (res.status) {
           localStorage.setItem("token", res.data.token);
           localStorage.setItem("user", JSON.stringify(res.data));
+          window.location.href = "dashboard.html";
+          // Swal.fire("Success", res.message, "success");
 
-          Swal.fire("Success", res.message, "success");
-
-          setTimeout(function () {
-            window.location.href = "dashboard.html";
-          }, 1500);
+          // setTimeout(function () {
+          //   
+          // }, 1500);
         } else {
           Swal.fire("Error", res.message, "error");
         }

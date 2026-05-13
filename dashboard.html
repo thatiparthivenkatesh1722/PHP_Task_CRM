@@ -644,34 +644,161 @@
       font-size: 11px;
     }
 
+    /* Status tabs */
+    .stab-wrap { display:flex; gap:6px; margin-bottom:14px; }
+    .stab {
+      padding:6px 16px; border-radius:8px; font-size:12px; font-weight:600;
+      border:1px solid var(--bdr); background:rgba(255,255,255,0.04);
+      color:var(--mu); cursor:pointer; transition:0.18s;
+    }
+    .stab.on {
+      background:linear-gradient(135deg,rgba(17,153,142,.18),rgba(56,239,125,.06));
+      color:var(--g2); border-color:rgba(17,153,142,.35);
+    }
+    .stab.on.red {
+      background:linear-gradient(135deg,rgba(239,68,68,.18),rgba(248,113,113,.06));
+      color:#f87171; border-color:rgba(239,68,68,.35);
+    }
+    .binactive {
+      background:rgba(239,68,68,0.12); color:#f87171;
+      padding:3px 8px; border-radius:5px; font-size:11px; font-weight:600;
+    }
+
+    .pg-wrap {
+      display:flex; align-items:center; flex-wrap:wrap; gap:5px;
+      margin-top:14px; padding-top:12px; border-top:1px solid var(--bdr);
+    }
+    .pg-btn {
+      min-width:34px; height:34px; border-radius:8px; border:1px solid var(--bdr);
+      background:rgba(255,255,255,0.04); color:var(--tx); font-size:13px;
+      font-weight:600; cursor:pointer; transition:0.17s; padding:0 8px;
+    }
+    .pg-btn:hover { background:rgba(255,255,255,0.09); border-color:rgba(17,153,142,.3); }
+    .pg-btn.pg-active {
+      background:linear-gradient(135deg,var(--g1),var(--g2));
+      border-color:transparent; color:#fff;
+    }
+    .pg-loadmore {
+      padding:6px 14px; border-radius:8px; border:1px solid rgba(56,189,248,.25);
+      background:rgba(56,189,248,.08); color:#38bdf8; font-size:12px;
+      font-weight:600; cursor:pointer; transition:0.17s;
+    }
+    .pg-loadmore:hover { background:rgba(56,189,248,.15); }
+    .pg-info {
+      margin-left:auto; font-size:11px; color:var(--mu); font-weight:500;
+    }
+    .btn-restore {
+      background:rgba(56,239,125,0.1); border:1px solid rgba(56,239,125,0.2);
+      color:#38ef7d; border-radius:6px; padding:4px 10px; font-size:11px;
+      font-weight:600; cursor:pointer; transition:0.2s;
+    }
+    .btn-restore:hover { background:rgba(56,239,125,0.2); }
+
     @media (max-width: 768px) {
-      .cside {
-        transform: translateX(-100%);
-      }
-
-      .cside.mob {
-        transform: translateX(0);
-      }
-
-      .cmain {
-        margin-left: 0 !important;
-      }
-
-      .pname,
-      .prole,
-      .nav-greet {
-        display: none;
-      }
+      .cside { transform: translateX(-100%); }
+      .cside.mob { transform: translateX(0); }
+      .cmain { margin-left: 0 !important; }
+      .pname, .prole, .nav-greet { display: none; }
     }
 
-    ::-webkit-scrollbar {
-      width: 5px;
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.09); border-radius: 3px; }
+
+    
+    .modal-backdrop { backdrop-filter: blur(4px); }
+
+    .modal-content {
+      background: var(--card) !important;
+      border: 1px solid rgba(255,255,255,0.09) !important;
+      border-radius: 20px !important;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(17,153,142,0.08) !important;
+      color: var(--tx) !important;
+      overflow: hidden;
     }
 
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.09);
-      border-radius: 3px;
+    .modal-header {
+      border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+      padding: 20px 24px 16px !important;
+      background: linear-gradient(135deg, rgba(17,153,142,0.08), rgba(56,239,125,0.04)) !important;
+      position: relative;
     }
+    .modal-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(17,153,142,0.4), transparent);
+    }
+    .modal-title {
+      font-size: 16px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.3px;
+      color: #fff !important;
+    }
+    .modal-body {
+      padding: 28px 28px 24px !important;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+    .modal-body label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--mu);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .modal-body .form-control,
+    .modal-body .form-select {
+      background: rgba(255,255,255,0.04) !important;
+      border: 1px solid rgba(255,255,255,0.09) !important;
+      color: var(--tx) !important;
+      border-radius: 10px !important;
+      padding: 10px 14px !important;
+      font-size: 13px !important;
+      transition: 0.2s;
+    }
+    .modal-body .form-control:focus,
+    .modal-body .form-select:focus {
+      background: rgba(255,255,255,0.07) !important;
+      border-color: rgba(17,153,142,0.5) !important;
+      box-shadow: 0 0 0 3px rgba(17,153,142,0.12) !important;
+      color: var(--tx) !important;
+    }
+    .modal-body .form-control::placeholder { color: var(--mu); }
+    .modal-body .form-select option { background: #1e2230; }
+
+    .btn-sv {
+      background: linear-gradient(135deg, var(--g1), var(--g2)) !important;
+      color: #0d0f18 !important;
+      border: none !important;
+      border-radius: 10px !important;
+      padding: 11px 20px !important;
+      font-weight: 800 !important;
+      font-size: 13px !important;
+      cursor: pointer;
+      transition: 0.2s;
+      width: 100%;
+      letter-spacing: 0.3px;
+    }
+    .btn-sv:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .modal-info-bar {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+    }
+    .modal-info-label {
+      font-size: 10px; color: var(--mu);
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;
+    }
+    .modal-info-val { font-size: 14px; font-weight: 700; color: #fff; }
+
+    .modal.fade .modal-dialog { transform: translateY(-16px) scale(0.98); }
+    .modal.show .modal-dialog  { transform: translateY(0) scale(1); transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); }
   </style>
 </head>
 
@@ -1055,26 +1182,17 @@
       <div class="stitle">All Companies</div>
       <div class="ssub">All companies in your workspace.</div>
       <div class="panel" style="max-width: 860px">
+        <div class="stab-wrap">
+          <button class="stab on" id="compTabActive" onclick="switchCompTab('active')"><i class="bi bi-check-circle me-1"></i>Active</button>
+          <button class="stab red" id="compTabInactive" onclick="switchCompTab('inactive')"><i class="bi bi-x-circle me-1"></i>Inactive</button>
+        </div>
         <div class="table-responsive">
           <table class="ctbl">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Company Name</th>
-                <th>Industry</th>
-                <th>Created</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="tblListCompany">
-              <tr>
-                <td colspan="5" class="text-center py-3" style="color: var(--mu)">
-                  Loading...
-                </td>
-              </tr>
-            </tbody>
+            <thead><tr><th>#</th><th>Company Name</th><th>Industry</th><th>Created</th><th>Action</th></tr></thead>
+            <tbody id="tblListCompany"><tr><td colspan="5" class="text-center py-3" style="color:var(--mu)">Loading...</td></tr></tbody>
           </table>
         </div>
+        <div id="pgCompany"></div>
       </div>
     </div>
 
@@ -1082,25 +1200,17 @@
       <div class="stitle">All Departments</div>
       <div class="ssub">All departments across your companies.</div>
       <div class="panel" style="max-width: 860px">
+        <div class="stab-wrap">
+          <button class="stab on" id="deptTabActive" onclick="switchDeptTab('active')"><i class="bi bi-check-circle me-1"></i>Active</button>
+          <button class="stab red" id="deptTabInactive" onclick="switchDeptTab('inactive')"><i class="bi bi-x-circle me-1"></i>Inactive</button>
+        </div>
         <div class="table-responsive">
           <table class="ctbl">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Department</th>
-                <th>Company</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="tblListDept">
-              <tr>
-                <td colspan="4" class="text-center py-3" style="color: var(--mu)">
-                  Loading...
-                </td>
-              </tr>
-            </tbody>
+            <thead><tr><th>#</th><th>Department</th><th>Company</th><th>Action</th></tr></thead>
+            <tbody id="tblListDept"><tr><td colspan="4" class="text-center py-3" style="color:var(--mu)">Loading...</td></tr></tbody>
           </table>
         </div>
+        <div id="pgDept"></div>
       </div>
     </div>
 
@@ -1108,29 +1218,17 @@
       <div class="stitle">All Employees</div>
       <div class="ssub">All registered employees.</div>
       <div class="panel" style="max-width: 1000px">
+        <div class="stab-wrap">
+          <button class="stab on" id="empTabActive" onclick="switchEmpTab('active')"><i class="bi bi-check-circle me-1"></i>Active</button>
+          <button class="stab red" id="empTabInactive" onclick="switchEmpTab('inactive')"><i class="bi bi-x-circle me-1"></i>Inactive</button>
+        </div>
         <div class="table-responsive">
           <table class="ctbl">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Company</th>
-                <th>Department</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="tblListEmp">
-              <tr>
-                <td colspan="8" class="text-center py-3" style="color: var(--mu)">
-                  Loading...
-                </td>
-              </tr>
-            </tbody>
+            <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Company</th><th>Department</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="tblListEmp"><tr><td colspan="8" class="text-center py-3" style="color:var(--mu)">Loading...</td></tr></tbody>
           </table>
         </div>
+        <div id="pgEmp"></div>
       </div>
     </div>
 
@@ -1140,62 +1238,48 @@
       <div class="panel" style="max-width: 1000px">
         <div class="table-responsive">
           <table class="ctbl">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Employee</th>
-                <th>Company</th>
-                <th>Month</th>
-                <th>Gross</th>
-                <th>Deduction</th>
-                <th>Net Pay</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="tblListSal">
-              <tr>
-                <td colspan="8" class="text-center py-3" style="color: var(--mu)">
-                  Loading...
-                </td>
-              </tr>
-            </tbody>
+            <thead><tr><th>#</th><th>Employee</th><th>Company</th><th>Month</th><th>Gross</th><th>Deduction</th><th>Net Pay</th><th>Action</th></tr></thead>
+            <tbody id="tblListSal"><tr><td colspan="8" class="text-center py-3" style="color:var(--mu)">Loading...</td></tr></tbody>
           </table>
         </div>
+        <div id="pgSal"></div>
       </div>
     </div>
 
-    <!-- SALARY DETAILS MODAL -->
-    <div class="modal fade" id="salaryModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="background: var(--card); border: 1px solid var(--bdr); color: var(--tx);">
-          <div class="modal-header" style="border-bottom: 1px solid var(--bdr)">
-            <h5 class="modal-title" style="font-weight: 700">
-              <i class="bi bi-cash-stack me-2" style="color: var(--g2)"></i>Salary Details
-            </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body" id="salaryModalBody"></div>
+  <!-- SALARY DETAILS VIEW MODAL -->
+  <div class="modal fade" id="salaryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:560px">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-cash-stack me-2" style="color:var(--g2)"></i>Salary Details</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
+        <div class="modal-body" id="salaryModalBody"></div>
       </div>
     </div>
+  </div>
 
   </main>
 
   <!-- EDIT COMPANY MODAL -->
   <div class="modal fade" id="editCompModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="background: var(--card); border: 1px solid var(--bdr); color: var(--tx);">
-        <div class="modal-header" style="border-bottom: 1px solid var(--bdr)">
-          <h5 class="modal-title" style="font-weight: 700"><i class="bi bi-pencil-square me-2" style="color: var(--g2)"></i>Edit Company</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-dialog-centered" style="max-width:480px">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-building me-2" style="color:var(--g2)"></i>Edit Company</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body fbox">
+        <div class="modal-body">
           <input type="hidden" id="edit_company_id">
-          <label>Company Name</label>
-          <input type="text" id="edit_company_name" class="form-control mb-3">
-          <label>Industry</label>
-          <input type="text" id="edit_industry" class="form-control mb-3">
-          <button type="button" id="btnUpdateComp" class="btn-sv w-100">Update Company</button>
+          <div class="mb-4">
+            <label>Company Name</label>
+            <input type="text" id="edit_company_name" class="form-control" placeholder="e.g. TechCorp Pvt Ltd">
+          </div>
+          <div class="mb-4">
+            <label>Industry</label>
+            <input type="text" id="edit_industry" class="form-control" placeholder="e.g. IT Services, Finance">
+          </div>
+          <button type="button" id="btnUpdateComp" class="btn-sv">Update Company</button>
         </div>
       </div>
     </div>
@@ -1203,17 +1287,19 @@
 
   <!-- EDIT DEPARTMENT MODAL -->
   <div class="modal fade" id="editDeptModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="background: var(--card); border: 1px solid var(--bdr); color: var(--tx);">
-        <div class="modal-header" style="border-bottom: 1px solid var(--bdr)">
-          <h5 class="modal-title" style="font-weight: 700"><i class="bi bi-pencil-square me-2" style="color: var(--g2)"></i>Edit Department</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-dialog-centered" style="max-width:440px">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-diagram-3 me-2" style="color:var(--g2)"></i>Edit Department</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body fbox">
+        <div class="modal-body">
           <input type="hidden" id="edit_department_id">
-          <label>Department Name</label>
-          <input type="text" id="edit_department_name" class="form-control mb-3">
-          <button type="button" id="btnUpdateDept" class="btn-sv w-100">Update Department</button>
+          <div class="mb-4">
+            <label>Department Name</label>
+            <input type="text" id="edit_department_name" class="form-control" placeholder="e.g. Engineering, HR">
+          </div>
+          <button type="button" id="btnUpdateDept" class="btn-sv">Update Department</button>
         </div>
       </div>
     </div>
@@ -1221,44 +1307,34 @@
 
   <!-- EDIT EMPLOYEE MODAL -->
   <div class="modal fade" id="editEmpModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content" style="background: var(--card); border: 1px solid var(--bdr); color: var(--tx);">
-        <div class="modal-header" style="border-bottom: 1px solid var(--bdr)">
-          <h5 class="modal-title" style="font-weight: 700"><i class="bi bi-pencil-square me-2" style="color: var(--g2)"></i>Edit Employee</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-dialog-centered" style="max-width:640px">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-person-badge me-2" style="color:var(--g2)"></i>Edit Employee</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body fbox">
+        <div class="modal-body">
           <input type="hidden" id="edit_emp_id">
           <div class="row">
-            <div class="col-6 mb-2"><label>First Name</label><input type="text" id="edit_emp_fname" class="form-control"></div>
-            <div class="col-6 mb-2"><label>Last Name</label><input type="text" id="edit_emp_lname" class="form-control"></div>
+            <div class="col-6 mb-3"><label>First Name</label><input type="text" id="edit_emp_fname" class="form-control" placeholder="First name"></div>
+            <div class="col-6 mb-3"><label>Last Name</label><input type="text" id="edit_emp_lname" class="form-control" placeholder="Last name"></div>
           </div>
-          <div class="mb-2"><label>Email</label><input type="email" id="edit_emp_email" class="form-control"></div>
-          <div class="mb-2"><label>Phone</label><input type="text" id="edit_emp_phone" class="form-control"></div>
+          <div class="mb-3"><label>Email</label><input type="email" id="edit_emp_email" class="form-control" placeholder="user@email.com"></div>
+          <div class="mb-3"><label>Phone</label><input type="text" id="edit_emp_phone" class="form-control" placeholder="10-digit number"></div>
           <div class="row">
-            <div class="col-6 mb-2">
-              <label>Company</label>
-              <select id="edit_emp_company" class="form-select"></select>
-            </div>
-            <div class="col-6 mb-2">
-              <label>Department</label>
-              <select id="edit_emp_department" class="form-select"></select>
-            </div>
+            <div class="col-6 mb-3"><label>Company</label><select id="edit_emp_company" class="form-select"></select></div>
+            <div class="col-6 mb-3"><label>Department</label><select id="edit_emp_department" class="form-select"></select></div>
           </div>
-          <div class="row mb-3">
-            <div class="col-6">
-              <label>Role</label>
-              <input type="text" id="edit_emp_role" class="form-control">
-            </div>
-            <div class="col-6">
-              <label>Status</label>
+          <div class="row mb-4">
+            <div class="col-6"><label>Role</label><input type="text" id="edit_emp_role" class="form-control" placeholder="e.g. Engineer"></div>
+            <div class="col-6"><label>Status</label>
               <select id="edit_emp_status" class="form-select">
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
             </div>
           </div>
-          <button type="button" id="btnUpdateEmp" class="btn-sv w-100">Update Employee</button>
+          <button type="button" id="btnUpdateEmp" class="btn-sv">Update Employee</button>
         </div>
       </div>
     </div>
@@ -1266,53 +1342,30 @@
 
   <!-- EDIT SALARY MODAL -->
   <div class="modal fade" id="editSalModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content" style="background: var(--card); border: 1px solid var(--bdr); color: var(--tx);">
-        <div class="modal-header" style="border-bottom: 1px solid var(--bdr);">
-          <h5 class="modal-title" style="font-weight: 700;">
-            <i class="bi bi-pencil-square me-2" style="color: var(--g2);"></i>Edit Salary
-          </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-dialog-centered" style="max-width:660px">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-pencil-square me-2" style="color:var(--g2)"></i>Edit Salary</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
-        <div class="modal-body" style="padding: 24px;">
+        <div class="modal-body">
           <input type="hidden" id="edit_sal_id">
-
-          <!-- Summary bar -->
-          <div class="d-flex gap-3 mb-4 p-3 rounded" style="background:rgba(255,255,255,0.03); border:1px solid var(--bdr);">
-            <div>
-              <div style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;">Employee</div>
-              <div id="edit_sal_emp_name" style="font-weight:700;font-size:14px;"></div>
-            </div>
-            <div style="margin-left:auto; text-align:right;">
-              <div style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;">Month</div>
-              <div id="edit_sal_month" style="font-weight:700;font-size:14px;"></div>
-            </div>
+          <div class="modal-info-bar d-flex justify-content-between">
+            <div><div class="modal-info-label">Employee</div><div class="modal-info-val" id="edit_sal_emp_name"></div></div>
+            <div style="text-align:right"><div class="modal-info-label">Month</div><div class="modal-info-val" id="edit_sal_month"></div></div>
           </div>
-
-          <!-- Payment date -->
-          <div class="mb-3">
-            <label style="display:block;font-size:12px;font-weight:600;color:var(--mu);margin-bottom:5px;">Payment Date</label>
-            <input type="date" id="edit_sal_payment_date" class="form-control"
-              style="background:rgba(255,255,255,0.04);border:1px solid var(--bdr);color:var(--tx);border-radius:9px;padding:9px 13px;font-size:13px;">
-          </div>
-
-          <!-- Component lines -->
+          <div class="mb-3"><label>Payment Date</label><input type="date" id="edit_sal_payment_date" class="form-control"></div>
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <span style="font-size:12px;font-weight:600;color:var(--mu);">Salary Components</span>
-            <button type="button" class="btn-al" id="editSalAddLine">
-              <i class="bi bi-plus-lg me-1"></i>Add Line
-            </button>
+            <span style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.6px">Salary Components</span>
+            <button type="button" class="btn-al" id="editSalAddLine"><i class="bi bi-plus-lg me-1"></i>Add Line</button>
           </div>
           <div id="editSalLines"></div>
-
-          <!-- Live totals -->
-          <div class="d-flex gap-3 mt-3 p-3 rounded" style="background:rgba(255,255,255,0.03); border:1px solid var(--bdr); font-size:13px;">
+          <div class="d-flex gap-3 mt-3 p-3 rounded" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;font-size:13px;">
             <div>Gross: <span id="edit_sal_gross" style="color:var(--g2);font-weight:700;">₹0</span></div>
             <div>Deductions: <span id="edit_sal_ded" style="color:#f87171;font-weight:700;">₹0</span></div>
-            <div style="margin-left:auto;">Net Pay: <span id="edit_sal_net" style="color:var(--g2);font-weight:800;font-size:15px;">₹0</span></div>
+            <div style="margin-left:auto">Net Pay: <span id="edit_sal_net" style="color:var(--g2);font-weight:800;font-size:15px;">₹0</span></div>
           </div>
-
-          <button type="button" id="btnUpdateSal" class="btn-sv w-100 mt-4">Update Salary</button>
+          <button type="button" id="btnUpdateSal" class="btn-sv mt-4">Update Salary</button>
         </div>
       </div>
     </div>

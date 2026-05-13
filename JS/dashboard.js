@@ -61,11 +61,12 @@ $(document).ready(function () {
     $(".sec").removeClass("on");
     $("#sec-" + s).addClass("on");
     if ($(window).width() <= 768) $("#sidebar").removeClass("mob");
-    if (s === "list-company") loadListCompany();
-    if (s === "list-department") loadListDept();
-    if (s === "list-employee") loadListEmp();
-    if (s === "list-salary") loadListSalary();
+    if (s === "list-company")    { compState.open = false; loadListCompany(); }
+    if (s === "list-department") { deptState.open = false; loadListDept(); }
+    if (s === "list-employee")   { empState.open  = false; loadListEmp(); }
+    if (s === "list-salary")     { salState.open  = false; loadListSalary(); }
   });
+
 
   $("[data-sec='dashboard']").on("click", function () {
     $(".si, .si-child").removeClass("on");
@@ -142,183 +143,212 @@ $(document).ready(function () {
 
   loadStats();
 
+  // Pagination
+  let compState = { page: 1, status: 'active', grpStart: 1, open: false };
+  let deptState = { page: 1, status: 'active', grpStart: 1, open: false };
+  let empState  = { page: 1, status: 'active', grpStart: 1, open: false };
+  let salState  = { page: 1, grpStart: 1, open: false };
+  const PER_PAGE = 5, GRP = 10;
+
+  function renderPagination(containerId, meta, state, loadFn) {
+    if (!meta || meta.total_pages <= 1) { $('#' + containerId).html(''); return; }
+    const { page, total_pages, total } = meta;
+    const $c = $('#' + containerId);
+
+    if (!state.open) {
+      // ── Collapsed: show only "Load More" button ──
+      $c.html(`
+        <div class="pg-wrap">
+          <button class="pg-loadmore pg-expand"><i class="bi bi-grid-3x3-gap me-1"></i>Load More Pages</button>
+          <span class="pg-info">Page ${page}/${total_pages} &bull; ${total} records</span>
+        </div>`);
+      $c.find('.pg-expand').on('click', function () {
+        state.open = true;
+        renderPagination(containerId, meta, state, loadFn);
+      });
+    } else {
+      // ── Expanded: show page number group ──
+      let s = state.grpStart, e = Math.min(s + GRP - 1, total_pages);
+      let h = '<div class="pg-wrap">';
+      if (page > 1) h += `<button class="pg-btn pg-nav" data-p="${page - 1}">&#8249;</button>`;
+      if (s > 1)    h += `<button class="pg-loadmore pg-grp" data-gs="${s - GRP}">&#8249; Prev</button>`;
+      for (let i = s; i <= e; i++) {
+        h += `<button class="pg-btn ${i === page ? 'pg-active' : ''}" data-p="${i}">${i}</button>`;
+      }
+      if (e < total_pages) h += `<button class="pg-loadmore pg-grp" data-gs="${e + 1}">Load More &#8250;</button>`;
+      if (page < total_pages) h += `<button class="pg-btn pg-nav" data-p="${page + 1}">&#8250;</button>`;
+      h += `<span class="pg-info">Page ${page}/${total_pages} &bull; ${total} records</span></div>`;
+      $c.html(h);
+      $c.find('.pg-btn').on('click', function () {
+        state.page = parseInt($(this).data('p')); loadFn();
+      });
+      $c.find('.pg-grp').on('click', function () {
+        state.grpStart = parseInt($(this).data('gs'));
+        state.page = state.grpStart; loadFn();
+      });
+    }
+  }
+
+  // active inactive
+  window.switchCompTab = function (st) {
+    compState.status = st; compState.page = 1; compState.grpStart = 1; compState.open = false;
+    $('#compTabActive').removeClass('on');
+    $('#compTabInactive').removeClass('on');
+    if (st === 'active') $('#compTabActive').addClass('on');
+    else $('#compTabInactive').addClass('on');
+    loadListCompany();
+  };
+  window.switchDeptTab = function (st) {
+    deptState.status = st; deptState.page = 1; deptState.grpStart = 1; deptState.open = false;
+    $('#deptTabActive').removeClass('on');
+    $('#deptTabInactive').removeClass('on');
+    if (st === 'active') $('#deptTabActive').addClass('on');
+    else $('#deptTabInactive').addClass('on');
+    loadListDept();
+  };
+  window.switchEmpTab = function (st) {
+    empState.status = st; empState.page = 1; empState.grpStart = 1; empState.open = false;
+    $('#empTabActive').removeClass('on');
+    $('#empTabInactive').removeClass('on');
+    if (st === 'active') $('#empTabActive').addClass('on');
+    else $('#empTabInactive').addClass('on');
+    loadListEmp();
+  };
+
+
+  // List Companies
   function loadListCompany() {
     $.ajax({
-      url: "api/company/list.php", method: "GET", data: { user_id: user_id },
+      url: 'api/company/list.php', method: 'GET',
+      data: { user_id, page: compState.page, per_page: PER_PAGE, status: compState.status },
       success: function (res) {
-        if (!res.status || !res.data.length) {
-          $("#tblListCompany").html(`<tr><td colspan="5" class="text-center py-3" style="color:var(--mu)">No companies yet</td></tr>`);
-          return;
+        const isInactive = compState.status === 'inactive';
+        if (!res.status || !res.data || !res.data.length) {
+          $('#tblListCompany').html(`<tr><td colspan="5" class="text-center py-3" style="color:var(--mu)">No ${compState.status} companies</td></tr>`);
+          $('#pgCompany').html(''); return;
         }
-        let h = "";
+        let h = '', offset = (compState.page - 1) * PER_PAGE;
         $.each(res.data, function (i, c) {
           let cData = encodeURIComponent(JSON.stringify(c));
-          h += `<tr>
-            <td>${i + 1}</td>
-            <td>${c.company_name}</td>
-            <td>${c.industry}</td>
-            <td>${(c.created_at || "").split("T")[0] || "—"}</td>
-            <td>
-              <button class="btn-edit-comp" data-info='${cData}' style="background:none;border:none;color:#38bdf8;cursor:pointer;margin-right:8px;"><i class="bi bi-pencil"></i></button>
-              <button class="btn-del-comp" data-id="${c.id}" style="background:none;border:none;color:#ef4444;cursor:pointer;"><i class="bi bi-trash"></i></button>
-            </td>
-          </tr>`;
+          let actions = isInactive
+            ? `<button class="btn-restore btn-restore-comp" data-id="${c.id}"><i class="bi bi-arrow-counterclockwise me-1"></i>Restore</button>`
+            : `<button class="btn-edit-comp" data-info='${cData}' style="background:none;border:none;color:#38bdf8;cursor:pointer;margin-right:8px;"><i class="bi bi-pencil"></i></button>
+               <button class="btn-del-comp" data-id="${c.id}" style="background:none;border:none;color:#ef4444;cursor:pointer;"><i class="bi bi-trash"></i></button>`;
+          h += `<tr><td>${offset+i+1}</td><td>${c.company_name}</td><td>${c.industry}</td><td>${(c.created_at||'').split('T')[0]||'—'}</td><td>${actions}</td></tr>`;
         });
-        $("#tblListCompany").html(h);
+        $('#tblListCompany').html(h);
+        renderPagination('pgCompany', res.meta, compState, loadListCompany);
       }
     });
   }
 
+  //List Departments 
   function loadListDept() {
     $.ajax({
-      url: "api/department/list.php", method: "GET", data: { user_id: user_id },
+      url: 'api/department/list.php', method: 'GET',
+      data: { user_id, page: deptState.page, per_page: PER_PAGE, status: deptState.status },
       success: function (res) {
-        if (!res.status || !res.data.length) {
-          $("#tblListDept").html(`<tr><td colspan="4" class="text-center py-3" style="color:var(--mu)">No departments yet</td></tr>`);
-          return;
+        const isInactive = deptState.status === 'inactive';
+        if (!res.status || !res.data || !res.data.length) {
+          $('#tblListDept').html(`<tr><td colspan="4" class="text-center py-3" style="color:var(--mu)">No ${deptState.status} departments</td></tr>`);
+          $('#pgDept').html(''); return;
         }
-        let h = "";
+        let h = '', offset = (deptState.page - 1) * PER_PAGE;
         $.each(res.data, function (i, d) {
           let dData = encodeURIComponent(JSON.stringify(d));
-          h += `<tr>
-            <td>${i + 1}</td>
-            <td>${d.department_name}</td>
-            <td>${d.company_name}</td>
-            <td>
-              <button class="btn-edit-dept" data-info='${dData}' style="background:none;border:none;color:#38bdf8;cursor:pointer;margin-right:8px;"><i class="bi bi-pencil"></i></button>
-              <button class="btn-del-dept" data-id="${d.id}" style="background:none;border:none;color:#ef4444;cursor:pointer;"><i class="bi bi-trash"></i></button>
-            </td>
-          </tr>`;
+          let actions = isInactive
+            ? `<button class="btn-restore btn-restore-dept" data-id="${d.id}"><i class="bi bi-arrow-counterclockwise me-1"></i>Restore</button>`
+            : `<button class="btn-edit-dept" data-info='${dData}' style="background:none;border:none;color:#38bdf8;cursor:pointer;margin-right:8px;"><i class="bi bi-pencil"></i></button>
+               <button class="btn-del-dept" data-id="${d.id}" style="background:none;border:none;color:#ef4444;cursor:pointer;"><i class="bi bi-trash"></i></button>`;
+          h += `<tr><td>${offset+i+1}</td><td>${d.department_name}</td><td>${d.company_name}</td><td>${actions}</td></tr>`;
         });
-        $("#tblListDept").html(h);
+        $('#tblListDept').html(h);
+        renderPagination('pgDept', res.meta, deptState, loadListDept);
       }
     });
   }
 
+  //List Employees
   function loadListEmp() {
     $.ajax({
-      url: "api/employee/list.php", method: "GET", data: { user_id: user_id },
+      url: 'api/employee/list.php', method: 'GET',
+      data: { user_id, page: empState.page, per_page: PER_PAGE, status: empState.status },
       success: function (res) {
-        if (!res.status || !res.data.length) {
-          $("#tblListEmp").html(`<tr><td colspan="8" class="text-center py-3" style="color:var(--mu)">No employees yet</td></tr>`);
-          return;
+        const isInactive = empState.status === 'inactive';
+        if (!res.status || !res.data || !res.data.length) {
+          $('#tblListEmp').html(`<tr><td colspan="8" class="text-center py-3" style="color:var(--mu)">No ${empState.status} employees</td></tr>`);
+          $('#pgEmp').html(''); return;
         }
-        let h = "";
+        let h = '', offset = (empState.page - 1) * PER_PAGE;
         $.each(res.data, function (i, e) {
           let eData = encodeURIComponent(JSON.stringify(e));
-          h += `<tr>
-            <td>${i + 1}</td>
-            <td>${e.first_name} ${e.last_name}</td>
-            <td>${e.email}</td>
-            <td>${e.company_name}</td>
-            <td>${e.department_name}</td>
-            <td>${e.role}</td>
-            <td><span class="bactive">${e.status || "active"}</span></td>
-            <td>
-              <button class="btn-edit-emp" data-info='${eData}' style="background:none;border:none;color:#38bdf8;cursor:pointer;margin-right:8px;"><i class="bi bi-pencil"></i></button>
-              <button class="btn-del-emp" data-id="${e.id}" style="background:none;border:none;color:#ef4444;cursor:pointer;"><i class="bi bi-trash"></i></button>
-            </td>
-          </tr>`;
+          let badge = e.status === 'inactive' ? `<span class="binactive">inactive</span>` : `<span class="bactive">active</span>`;
+          let actions = isInactive
+            ? `<button class="btn-restore btn-restore-emp" data-id="${e.id}"><i class="bi bi-arrow-counterclockwise me-1"></i>Restore</button>`
+            : `<button class="btn-edit-emp" data-info='${eData}' style="background:none;border:none;color:#38bdf8;cursor:pointer;margin-right:8px;"><i class="bi bi-pencil"></i></button>
+               <button class="btn-del-emp" data-id="${e.id}" style="background:none;border:none;color:#ef4444;cursor:pointer;"><i class="bi bi-trash"></i></button>`;
+          h += `<tr><td>${offset+i+1}</td><td>${e.first_name} ${e.last_name}</td><td>${e.email}</td><td>${e.company_name}</td><td>${e.department_name}</td><td>${e.role}</td><td>${badge}</td><td>${actions}</td></tr>`;
         });
-        $("#tblListEmp").html(h);
+        $('#tblListEmp').html(h);
+        renderPagination('pgEmp', res.meta, empState, loadListEmp);
       }
     });
   }
 
-  $(document).on("click", ".btn-del-emp", function () {
-    let emp_id = $(this).data("id");
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This will delete the employee and all their salary records!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#64748b",
-      confirmButtonText: "Yes, delete"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        $.ajax({
-          url: "api/employee/delete.php",
-          method: "POST",
-          data: { employee_id: emp_id },
-          success: function (res) {
-            if (res.status) {
-              Swal.fire("Deleted!", res.message, "success");
-              loadListEmp();
-              loadStats();
-              loadEmployees();
-            } else {
-              Swal.fire("Error", res.message, "error");
-            }
-          },
-          error: function () {
-            Swal.fire("Error", "Could not delete employee", "error");
-          }
-        });
-      }
-    });
+  // Delete Deactivate Employee 
+  $(document).on('click', '.btn-del-emp', function () {
+    let emp_id = $(this).data('id');
+    Swal.fire({ title: 'Deactivate employee?', text: 'They will be moved to Inactive tab.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Yes, deactivate' })
+    .then(r => { if (r.isConfirmed) {
+      $.ajax({ url: 'api/employee/delete.php', method: 'POST', data: { employee_id: emp_id },
+        success: function (res) {
+          if (res.status) { Swal.fire('Deactivated!', res.message, 'success'); loadListEmp(); loadStats(); loadEmployees(); }
+          else Swal.fire('Error', res.message, 'error');
+        }
+      });
+    }});
   });
 
-  $(document).on("click", ".btn-del-comp", function () {
-    let comp_id = $(this).data("id");
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This will delete the company and all its departments, employees, and salaries!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#64748b",
-      confirmButtonText: "Yes, delete"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        $.ajax({
-          url: "api/company/delete.php",
-          method: "POST",
-          data: { company_id: comp_id },
-          success: function (res) {
-            if (res.status) {
-              Swal.fire("Deleted!", res.message, "success");
-              loadListCompany();
-              loadStats();
-              loadCompanies();
-            } else {
-              Swal.fire("Error", res.message, "error");
-            }
-          },
-          error: function () {
-            Swal.fire("Error", "Could not delete company", "error");
-          }
-        });
-      }
-    });
+  //  Delete Deactivat Company
+  $(document).on('click', '.btn-del-comp', function () {
+    let comp_id = $(this).data('id');
+    Swal.fire({ title: 'Deactivate company?', text: 'Company, its departments and employees will be set to Inactive.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Yes, deactivate' })
+    .then(r => { if (r.isConfirmed) {
+      $.ajax({ url: 'api/company/delete.php', method: 'POST', data: { company_id: comp_id },
+        success: function (res) {
+          if (res.status) { Swal.fire('Deactivated!', res.message, 'success'); loadListCompany(); loadStats(); loadCompanies(); }
+          else Swal.fire('Error', res.message, 'error');
+        }
+      });
+    }});
   });
 
+  // List Salaries 
   function loadListSalary() {
     $.ajax({
-      url: "api/salary/list.php", method: "GET", data: { user_id: user_id },
+      url: 'api/salary/list.php', method: 'GET',
+      data: { user_id, page: salState.page, per_page: PER_PAGE },
       success: function (res) {
-        if (!res.status || !res.data.length) {
-          $("#tblListSal").html(`<tr><td colspan="8" class="text-center py-3" style="color:var(--mu)">No salaries yet</td></tr>`);
-          return;
+        if (!res.status || !res.data || !res.data.length) {
+          $('#tblListSal').html(`<tr><td colspan="8" class="text-center py-3" style="color:var(--mu)">No salaries yet</td></tr>`);
+          $('#pgSal').html(''); return;
         }
-        let h = "";
+        let h = '', offset = (salState.page - 1) * PER_PAGE;
         $.each(res.data, function (i, s) {
           h += `<tr>
-            <td>${i + 1}</td>
-            <td>${s.first_name} ${s.last_name}</td>
-            <td>${s.company_name}</td>
+            <td>${offset+i+1}</td><td>${s.first_name} ${s.last_name}</td><td>${s.company_name}</td>
             <td>${s.salary_month}</td>
-            <td>₹${Number(s.gross).toLocaleString("en-IN")}</td>
-            <td style="color:#f87171">₹${Number(s.deduction).toLocaleString("en-IN")}</td>
-            <td class="bamt">₹${Number(s.net).toLocaleString("en-IN")}</td>
+            <td>₹${Number(s.gross).toLocaleString('en-IN')}</td>
+            <td style="color:#f87171">₹${Number(s.deduction).toLocaleString('en-IN')}</td>
+            <td class="bamt">₹${Number(s.net).toLocaleString('en-IN')}</td>
             <td>
-              <button class="btn-view-sal" data-info='${encodeURIComponent(JSON.stringify(s))}' style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.2);color:#38bdf8;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;transition:0.2s;margin-right:6px;">View Details</button>
+              <button class="btn-view-sal" data-info='${encodeURIComponent(JSON.stringify(s))}' style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.2);color:#38bdf8;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;margin-right:6px;">View</button>
               <button class="btn-edit-sal" data-info='${encodeURIComponent(JSON.stringify(s))}' style="background:none;border:none;color:#38bdf8;cursor:pointer;margin-right:6px;"><i class="bi bi-pencil"></i></button>
               <button class="btn-del-sal" data-id="${s.id}" style="background:none;border:none;color:#ef4444;cursor:pointer;"><i class="bi bi-trash"></i></button>
-            </td>
-          </tr>`;
+            </td></tr>`;
         });
-        $("#tblListSal").html(h);
+        $('#tblListSal').html(h);
+        renderPagination('pgSal', res.meta, salState, loadListSalary);
       }
     });
   }
@@ -639,20 +669,41 @@ $(document).ready(function () {
     });
   });
 
-  $(document).on("click", ".btn-del-dept", function () {
-    let dept_id = $(this).data("id");
-    Swal.fire({
-      title: "Are you sure?", text: "This deletes the department AND all its employees/salaries!",
-      icon: "warning", showCancelButton: true, confirmButtonColor: "#ef4444", confirmButtonText: "Yes, delete"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        $.ajax({
-          url: "api/department/delete.php", method: "POST", data: { department_id: dept_id },
-          success: function (res) {
-            if (res.status) { Swal.fire("Deleted!", res.message, "success"); loadListDept(); loadStats(); }
-            else Swal.fire("Error", res.message, "error");
-          }
-        });
+  $(document).on('click', '.btn-del-dept', function () {
+    let dept_id = $(this).data('id');
+    Swal.fire({ title: 'Deactivate department?', text: 'Department and its employees will be set to Inactive.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Yes, deactivate' })
+    .then(r => { if (r.isConfirmed) {
+      $.ajax({ url: 'api/department/delete.php', method: 'POST', data: { department_id: dept_id },
+        success: function (res) {
+          if (res.status) { Swal.fire('Deactivated!', res.message, 'success'); loadListDept(); loadStats(); }
+          else Swal.fire('Error', res.message, 'error');
+        }
+      });
+    }});
+  });
+
+  //  Restore handlers 
+  $(document).on('click', '.btn-restore-comp', function () {
+    $.ajax({ url: 'api/company/restore.php', method: 'POST', data: { company_id: $(this).data('id') },
+      success: function (res) {
+        if (res.status) { Swal.fire('Restored!', res.message, 'success'); loadListCompany(); loadStats(); loadCompanies(); }
+        else Swal.fire('Error', res.message, 'error');
+      }
+    });
+  });
+  $(document).on('click', '.btn-restore-dept', function () {
+    $.ajax({ url: 'api/department/restore.php', method: 'POST', data: { department_id: $(this).data('id') },
+      success: function (res) {
+        if (res.status) { Swal.fire('Restored!', res.message, 'success'); loadListDept(); loadStats(); }
+        else Swal.fire('Error', res.message, 'error');
+      }
+    });
+  });
+  $(document).on('click', '.btn-restore-emp', function () {
+    $.ajax({ url: 'api/employee/restore.php', method: 'POST', data: { employee_id: $(this).data('id') },
+      success: function (res) {
+        if (res.status) { Swal.fire('Restored!', res.message, 'success'); loadListEmp(); loadStats(); loadEmployees(); }
+        else Swal.fire('Error', res.message, 'error');
       }
     });
   });
@@ -789,7 +840,7 @@ $(document).ready(function () {
     $("#editSalLines").html("");
     let existingComps = data.components || [];
     if (typeof existingComps === 'string') {
-      try { existingComps = JSON.parse(existingComps); } catch(e) { existingComps = []; }
+      try { existingComps = JSON.parse(existingComps); } catch (e) { existingComps = []; }
     }
     if (existingComps.length) {
       existingComps.forEach(function (ec) {
@@ -819,7 +870,7 @@ $(document).ready(function () {
   });
 
   $("#btnUpdateSal").on("click", function () {
-    let sal_id      = $("#edit_sal_id").val();
+    let sal_id = $("#edit_sal_id").val();
     let paymentDate = $("#edit_sal_payment_date").val();
     if (!paymentDate) { Swal.fire("Error", "Payment date is required", "error"); return; }
 
@@ -833,7 +884,7 @@ $(document).ready(function () {
         lines.push({ component_id: cid, amount: amt });
       }
     });
-    if (dup)         { Swal.fire("Error", "Duplicate component", "error"); return; }
+    if (dup) { Swal.fire("Error", "Duplicate component", "error"); return; }
     if (!lines.length) { Swal.fire("Error", "Add at least one component", "error"); return; }
 
     $.ajax({

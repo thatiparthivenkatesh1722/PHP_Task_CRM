@@ -15,50 +15,48 @@ class CompanyController
     public function create($company_name, $industry, $created_by)
     {
         $company_name = trim($company_name);
-        $industry = trim($industry);
+        $industry     = trim($industry);
 
         if ($company_name == "" || $industry == "" || $created_by == "") {
             sendResponse(false, "All fields are required");
         }
-
         if (strlen($company_name) < 2) {
             sendResponse(false, "Company name must be at least 2 characters");
         }
 
-        $this->db->query("INSERT INTO company (company_name, industry, created_by)
-        VALUES (:company_name, :industry, :created_by)
-    ");
-
+        $this->db->query("INSERT INTO company (company_name, industry, created_by, status) VALUES (:company_name, :industry, :created_by, 'active')");
         $status = $this->db->create([
             "company_name" => $company_name,
             "industry"     => $industry,
             "created_by"   => $created_by
         ]);
 
-        if (!$status) {
-            sendResponse(false, "Company creation failed");
-        }
-
+        if (!$status) sendResponse(false, "Company creation failed");
         sendResponse(true, "Company created successfully");
     }
 
-    public function list($user_id)
+    public function list($user_id, $page = 1, $per_page = 5, $status = 'active')
     {
-        if ($user_id == "") {
-            sendResponse(false, "User id required");
-        }
+        if ($user_id == "") sendResponse(false, "User id required");
 
-        $this->db->query("
-        SELECT * FROM company
-        WHERE created_by = :user_id
-        ORDER BY id DESC
-    ");
+        $page     = max(1, (int)$page);
+        $per_page = max(1, (int)$per_page);
+        $offset   = ($page - 1) * $per_page;
 
-        $companies = $this->db->get([
-            "user_id" => $user_id
+        $this->db->query("SELECT COUNT(*) as total FROM company WHERE created_by = :user_id AND status = :status");
+        $count       = $this->db->first(["user_id" => $user_id, "status" => $status]);
+        $total       = (int)($count["total"] ?? 0);
+        $total_pages = max(1, (int)ceil($total / $per_page));
+
+        $this->db->query("SELECT * FROM company WHERE created_by = :user_id AND status = :status ORDER BY id DESC LIMIT $per_page OFFSET $offset");
+        $companies = $this->db->get(["user_id" => $user_id, "status" => $status]);
+
+        sendResponse(true, "Companies fetched successfully", $companies, [
+            "total"       => $total,
+            "page"        => $page,
+            "per_page"    => $per_page,
+            "total_pages" => $total_pages
         ]);
-
-        sendResponse(true, "Companies fetched successfully", $companies);
     }
 
     public function update($company_id, $company_name, $industry)
@@ -71,39 +69,28 @@ class CompanyController
             ["company_name" => $company_name, "industry" => $industry, "updated_at" => date('Y-m-d H:i:s')],
             ["id" => $company_id]
         );
-        if (!$status) {
-            sendResponse(false, "Failed to update company");
-        }
+        if (!$status) sendResponse(false, "Failed to update company");
         sendResponse(true, "Company updated successfully");
     }
 
     public function delete($company_id)
     {
-        if ($company_id == "") {
-            sendResponse(false, "Company ID is required");
-        }
+        if ($company_id == "") sendResponse(false, "Company ID is required");
 
-        // Delete salary_details linked to employees of this company
-        $this->db->query("DELETE FROM salary_details WHERE salary_id IN (SELECT id FROM salary WHERE employee_id IN (SELECT id FROM employee WHERE company_id = :company_id))");
-        $this->db->delete(["company_id" => $company_id]);
+        $this->db->update("employee",   ["status" => "inactive", "updated_at" => date('Y-m-d H:i:s')], ["company_id" => $company_id]);
+        $this->db->update("department", ["status" => "inactive", "updated_at" => date('Y-m-d H:i:s')], ["company_id" => $company_id]);
+        $status = $this->db->update("company", ["status" => "inactive", "updated_at" => date('Y-m-d H:i:s')], ["id" => $company_id]);
 
-        // Delete salaries linked to employees of this company
-        $this->db->query("DELETE FROM salary WHERE employee_id IN (SELECT id FROM employee WHERE company_id = :company_id)");
-        $this->db->delete(["company_id" => $company_id]);
+        if (!$status) sendResponse(false, "Failed to deactivate company");
+        sendResponse(true, "Company deactivated successfully");
+    }
 
-        // Delete associated employees
-        $this->db->delete(["company_id" => $company_id], "employee");
+    public function restore($company_id)
+    {
+        if ($company_id == "") sendResponse(false, "Company ID is required");
 
-        // Delete associated departments
-        $this->db->delete(["company_id" => $company_id], "department");
-
-        // Delete the company
-        $status = $this->db->delete(["id" => $company_id], "company");
-
-        if (!$status) {
-            sendResponse(false, "Failed to delete company");
-        }
-
-        sendResponse(true, "Company deleted successfully");
+        $status = $this->db->update("company", ["status" => "active", "updated_at" => date('Y-m-d H:i:s')], ["id" => $company_id]);
+        if (!$status) sendResponse(false, "Failed to restore company");
+        sendResponse(true, "Company restored successfully");
     }
 }

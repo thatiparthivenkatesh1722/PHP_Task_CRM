@@ -12,40 +12,36 @@ class SalaryController
         $this->db = new DB();
     }
 
-    public function list($user_id)
+    public function list($user_id, $page = 1, $per_page = 5)
     {
-        if ($user_id == "") {
-            sendResponse(false, "User id required");
-        }
+        if ($user_id == "") sendResponse(false, "User id required");
 
-        $this->db->query("
-            SELECT s.id, s.salary_month, s.payment_date, s.gross, s.deduction, s.net,
-                   e.first_name, e.last_name, c.company_name, d.department_name
-            FROM salary s
-            JOIN employee e ON e.id = s.employee_id
-            JOIN company c ON c.id = e.company_id
-            JOIN department d ON d.id = e.department_id
-            WHERE c.created_by = :user_id
-            ORDER BY s.id DESC
-        ");
+        $page     = max(1, (int)$page);
+        $per_page = max(1, (int)$per_page);
+        $offset   = ($page - 1) * $per_page;
+
+        $this->db->query("SELECT COUNT(*) as total FROM salary s JOIN employee e ON e.id = s.employee_id JOIN company c ON c.id = e.company_id WHERE c.created_by = :user_id");
+        $count       = $this->db->first(["user_id" => $user_id]);
+        $total       = (int)($count["total"] ?? 0);
+        $total_pages = max(1, (int)ceil($total / $per_page));
+
+        $this->db->query("SELECT s.id, s.salary_month, s.payment_date, s.gross, s.deduction, s.net, e.first_name, e.last_name, c.company_name, d.department_name FROM salary s JOIN employee e ON e.id = s.employee_id JOIN company c ON c.id = e.company_id JOIN department d ON d.id = e.department_id WHERE c.created_by = :user_id ORDER BY s.id DESC LIMIT $per_page OFFSET $offset");
         $rows = $this->db->get(["user_id" => $user_id]);
 
-        // Attach components for each salary row
         foreach ($rows as &$row) {
-            $this->db->query("
-                SELECT sc.component_name AS name,
-                       CASE WHEN sc.component_type = 1 THEN 'earning' ELSE 'deduction' END AS type,
-                       sd.amount
-                FROM salary_details sd
-                JOIN salary_component sc ON sc.id = sd.component_id
-                WHERE sd.salary_id = :salary_id
-            ");
+            $this->db->query("SELECT sc.component_name AS name, CASE WHEN sc.component_type = 1 THEN 'earning' ELSE 'deduction' END AS type, sd.amount FROM salary_details sd JOIN salary_component sc ON sc.id = sd.component_id WHERE sd.salary_id = :salary_id");
             $row['components'] = $this->db->get(["salary_id" => $row["id"]]);
         }
         unset($row);
 
-        sendResponse(true, "Salaries fetched", $rows);
+        sendResponse(true, "Salaries fetched", $rows, [
+            "total"       => $total,
+            "page"        => $page,
+            "per_page"    => $per_page,
+            "total_pages" => $total_pages
+        ]);
     }
+
 
     public function components()
     {
